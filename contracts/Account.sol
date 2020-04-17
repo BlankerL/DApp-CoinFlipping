@@ -1,13 +1,18 @@
 pragma solidity >=0.4.21 <0.7.0;
 
-contract UserAccount {
-    /// User's information
+contract Account {
+    /**
+     * User's information
+     * @notice User could be player or banker.
+     */
     struct User {
         address bindAddress;
         string accountID;
         string password;
         uint balance;
         bool inGame;
+        // Distinguish the player(true) and banker(false)
+        bool isPlayer;
         bool registered;
     }
 
@@ -50,7 +55,7 @@ contract UserAccount {
     /**
      * @param accountID The account ID the user would like to use.
      */
-    function createAccount(string memory accountID) public notRegistered(accountID) {
+    function createAccount(string memory accountID, bool isPlayer) public notRegistered(accountID) {
         //
         accountToAddress[accountID] = msg.sender;
         //
@@ -59,6 +64,7 @@ contract UserAccount {
         // userList[msg.sender].password =;
         userList[msg.sender].balance = 0;
         userList[msg.sender].inGame = false;
+        userList[msg.sender].isPlayer = isPlayer;
         userList[msg.sender].registered = true;
     }
 
@@ -78,7 +84,7 @@ contract UserAccount {
     }
 
     /**
-     * User transfer his/her deposit to another registered user with the user's address.
+     * User transfer his/her deposit to another registered user with the address.
      * @param toAddress The address of the target registered user to transfer balance to.
      * @param amount The amount of balance to transfer to the target registered user.
      * @return balance The balance of the user.
@@ -95,7 +101,7 @@ contract UserAccount {
     }
 
     /**
-     * User transfer his/her deposit to another registered user with the user's accountID.
+     * User transfer his/her deposit to another registered user with the accountID.
      * @param  toAccountID The accountID of the target registered user to transfer balance to.
      * @param amount The amount of balance to transfer to the target registered user.
      * @return balance The balance of the user.
