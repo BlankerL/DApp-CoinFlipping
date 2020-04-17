@@ -3,7 +3,6 @@ pragma solidity >=0.4.21 <0.7.0;
 contract Account {
     /**
      * User's information
-     * @notice User could be player or banker.
      */
     struct User {
         address bindAddress;
@@ -11,8 +10,6 @@ contract Account {
         string password;
         uint balance;
         bool inGame;
-        // Distinguish the player(true) and banker(false)
-        bool isPlayer;
         bool registered;
     }
 
@@ -55,7 +52,7 @@ contract Account {
     /**
      * @param accountID The account ID the user would like to use.
      */
-    function createAccount(string memory accountID, bool isPlayer) public notRegistered(accountID) {
+    function createAccount(string memory accountID) public notRegistered(accountID) {
         //
         accountToAddress[accountID] = msg.sender;
         //
@@ -64,7 +61,6 @@ contract Account {
         // userList[msg.sender].password =;
         userList[msg.sender].balance = 0;
         userList[msg.sender].inGame = false;
-        userList[msg.sender].isPlayer = isPlayer;
         userList[msg.sender].registered = true;
     }
 
