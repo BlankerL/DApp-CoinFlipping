@@ -1,6 +1,6 @@
 pragma solidity >=0.4.21 <0.7.0;
 
-contract Account {
+contract UserAccount {
     /// User's information
     struct User {
         address bindAddress;
