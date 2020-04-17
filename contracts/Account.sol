@@ -7,7 +7,6 @@ contract Account {
     struct User {
         address bindAddress;
         string accountID;
-        string password;
         uint balance;
         bool inGame;
         bool registered;
@@ -56,12 +55,13 @@ contract Account {
         //
         accountToAddress[accountID] = msg.sender;
         //
-        userList[msg.sender].accountID = accountID;
-        userList[msg.sender].bindAddress = msg.sender;
-        // userList[msg.sender].password =;
-        userList[msg.sender].balance = 0;
-        userList[msg.sender].inGame = false;
-        userList[msg.sender].registered = true;
+        userList[msg.sender] = User({
+            accountID: accountID,
+            bindAddress: msg.sender,
+            balance: 0,
+            inGame: false,
+            registered: true
+            });
     }
 
     /**
