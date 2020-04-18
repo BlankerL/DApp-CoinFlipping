@@ -87,8 +87,8 @@ contract CoinFlip is Account{
     }
 
     function detectCheating() private {
+        userList[gameHistory[gameIDCounter].player[0]].balance += banker.gameDeposit / 2;
         userList[gameHistory[gameIDCounter].player[1]].balance += banker.gameDeposit / 2;
-        userList[gameHistory[gameIDCounter].player[2]].balance += banker.gameDeposit / 2;
 
         delete banker.gameDeposit;
     }
