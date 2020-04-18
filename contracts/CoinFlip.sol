@@ -86,6 +86,13 @@ contract CoinFlip is Account{
         return cheaterCount;
     }
 
+    function detectCheating() private {
+        userList[gameHistory[gameIDCounter].player[1]].balance += banker.gameDeposit / 2;
+        userList[gameHistory[gameIDCounter].player[2]].balance += banker.gameDeposit / 2;
+
+        delete banker.gameDeposit;
+    }
+
     function findWinner() private returns (address) {
         if (validate() != 0) {
             uint mod = addmod(submittedClearText[gameHistory[gameIDCounter].player[0]], submittedClearText[gameHistory[gameIDCounter].player[1]], 2);
@@ -97,6 +104,7 @@ contract CoinFlip is Account{
             balanceTransfer();
             houseCleaning();
         } else {
+            detectCheating();
             houseCleaning();
             return address(0);
         }
