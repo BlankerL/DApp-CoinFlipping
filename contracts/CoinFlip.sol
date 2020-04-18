@@ -14,7 +14,7 @@ contract CoinFlip is Account{
     Banker banker = Banker({
         balance: 0,
         gameDeposit: 0
-        });
+    });
 
     /**
      * Players need to submit the hash values of their clear text before revealing
@@ -29,7 +29,6 @@ contract CoinFlip is Account{
     bool bothSubmitHash = false;
     /// Whether there is a table waiting for player to join
     bool currentlyWaiting = false;
-
 
     /**
      * Struct for Game
