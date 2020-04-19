@@ -14,24 +14,37 @@
 <body>
     <div class="wrapper fadeInDown">
     <form>
-        <div class="address">
-            <span><b>Your Address</b></span>
-            <span id="address">Pending</span>
-            <p>
+        <div class="account_information">
+            <span>
+                <span>
+                    <b>Your Address</b>
+                </span>
+                <span id="address">Pending</span>
+            </span>
+            <p id="login">
                 Please click <a href="#" onclick="firstTimeLogin();">here</a> to allow us read your selected Ethereum address from MetaMask.
             </p>
+            <div id="register">
+                You have not register your account yet! Please fill in the account ID and you will be registered!
+                <form>
+
+                </form>
+            </div>
         </div>
     </form>
     </div>
     <script>
-        function firstTimeLogin() {
-            ethereum.enable();
-            location.reload();
+        async function firstTimeLogin() {
+            await ethereum.enable();
+            location.reload();  // Reload until the enable is done.
         }
         $(window).on("load", function () {
-            App.init();
-            const address = web3.eth.accounts.givenProvider.selectedAddress;
-            document.getElementById("address").innerText = address;
+            coinFlipWeb3.init();
+            const address = web3.currentProvider.selectedAddress;
+            if (address != null) {  // If the address has been loaded, check if the account is registered.
+                document.getElementById("login").style.display = "none";
+                document.getElementById("address").innerText = address;
+            }
         });
     </script>
 </body>
