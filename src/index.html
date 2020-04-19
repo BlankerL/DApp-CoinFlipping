@@ -26,9 +26,16 @@
             </p>
             <div id="register">
                 You have not register your account yet! Please fill in the account ID and you will be registered!
-                <form>
-
-                </form>
+                <div>
+                    <form>
+                        <label>
+                            <input placeholder="Account ID">
+                        </label>
+                        <button>
+                            Submit
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </form>
@@ -38,12 +45,26 @@
             await ethereum.enable();
             location.reload();  // Reload until the enable is done.
         }
-        $(window).on("load", function () {
-            coinFlipWeb3.init();
-            const address = web3.currentProvider.selectedAddress;
+
+        $(window).on("load", async function () {
+            await coinFlipWeb3.init();
+            const address = coinFlipWeb3.web3Provider.selectedAddress;
             if (address != null) {  // If the address has been loaded, check if the account is registered.
                 document.getElementById("login").style.display = "none";
                 document.getElementById("address").innerText = address;
+                setTimeout(
+                    function() {
+                        coinFlipWeb3.contract.methods.checkRegistration().call().then(
+                            result => {
+                                if (result) {
+                                    document.getElementById("register").style.display = "none";
+                                }
+                            }
+                        )
+                    },
+                    1000
+                )
+
             }
         });
     </script>
