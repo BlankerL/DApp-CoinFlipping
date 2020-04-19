@@ -48,7 +48,7 @@ contract CoinFlip is Account{
         address[2] cheater;
     }
 
-    /// Self-increasng gameID counter
+    /// Self-increasing gameID counter
     uint gameID = 1;
     /// gameID => Game struct mapping
     mapping (uint => Game) gameHistory;
@@ -63,13 +63,10 @@ contract CoinFlip is Account{
      */
     function initializeGame(uint betValue) external {
         require(!currentlyWaiting, "There is a game waiting for player, you cannot start a new game now!");
-        gameHistory[gameID] = Game({
-            ID: gameID,
-            player: [address(msg.sender), address(0)],
-            betValue: betValue,
-            winner: address(0),
-            cheater: [address(address(0)), address(0)]
-        });
+        Game storage game = gameHistory[gameID];
+        game.ID = gameID;
+        game.player[0] = msg.sender;
+        game.betValue = betValue;
 
         userList[msg.sender].balance -= betValue;
         banker.gameDeposit += betValue;

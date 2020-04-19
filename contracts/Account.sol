@@ -55,13 +55,14 @@ contract Account {
         //
         accountToAddress[accountID] = msg.sender;
         //
-        userList[msg.sender] = User({
-            accountID: accountID,
-            bindAddress: msg.sender,
-            balance: 0,
-            inGame: false,
-            registered: true
-            });
+        User storage user = userList[msg.sender];
+        user.accountID = accountID;
+        user.bindAddress = msg.sender;
+        user.registered = true;
+    }
+
+    function checkRegistration() external view returns (bool) {
+        return userList[msg.sender].registered;
     }
 
     /**
