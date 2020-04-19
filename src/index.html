@@ -24,7 +24,7 @@
             <p id="login">
                 Please click <a href="#" onclick="firstTimeLogin();">here</a> to allow us read your selected Ethereum address from MetaMask.
             </p>
-            <div id="register">
+            <div id="register" style="display: none">
                 You have not register your account yet! Please fill in the account ID and you will be registered!
                 <div>
                     <form>
@@ -50,21 +50,20 @@
             await coinFlipWeb3.init();
             const address = coinFlipWeb3.web3Provider.selectedAddress;
             if (address != null) {  // If the address has been loaded, check if the account is registered.
-                document.getElementById("login").style.display = "none";
+                $("#login").hide();
                 document.getElementById("address").innerText = address;
                 setTimeout(
                     function() {
                         coinFlipWeb3.contract.methods.checkRegistration().call().then(
                             result => {
-                                if (result) {
-                                    document.getElementById("register").style.display = "none";
+                                if (!result) {
+                                    $("#register").show();
                                 }
                             }
                         )
                     },
                     1000
                 )
-
             }
         });
     </script>
