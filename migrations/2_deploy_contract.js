@@ -1,5 +1,5 @@
-var Account = artifacts.require("./Account.sol");
+var CoinFlip = artifacts.require("./CoinFlip.sol");
 
 module.exports = function(deployer) {
-    deployer.deploy(Account);
+    deployer.deploy(CoinFlip);
 };
