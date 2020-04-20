@@ -101,11 +101,11 @@
                                 if (error) {
                                     console.log(error);
                                 } else {
-                                    if (!result) {
+                                    if (result.length === 0) {  // Which means the length of account ID is not sufficient
                                         $("#register").show();
-                                    } else {
+                                    } else {  // The length of account ID is sufficient, show account information
                                         $("#account_details").show();
-                                        refreshBalance();
+                                        refreshAccountInfomation();
                                     }
                                 }
                             }

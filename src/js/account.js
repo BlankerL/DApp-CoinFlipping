@@ -1,4 +1,4 @@
-function refreshBalance() {
+function refreshAccountInfomation() {
     coinFlipWeb3.contractInstance.methods.checkBalance().call(
         {
             from: coinFlipWeb3.web3Provider.selectedAddress
@@ -8,6 +8,18 @@ function refreshBalance() {
                 console.log(error);
             } else {
                 document.getElementById("balance").innerText = web3.utils.fromWei(result, 'ether') + ' ETH';
+            }
+        }
+    )
+    coinFlipWeb3.contractInstance.methods.checkRegistration().call(
+        {
+            from: coinFlipWeb3.web3Provider.selectedAddress
+        },
+        function(error, result) {
+            if (error) {
+                console.log(error);
+            } else {
+                document.getElementById("username").innerText = result;
             }
         }
     )
@@ -45,7 +57,7 @@ $("#button_deposit").click(
                 if (error) {
                     console.log(error);
                 } else {
-                    refreshBalance()
+                    refreshAccountInfomation()
                 }
             }
         )
@@ -65,7 +77,7 @@ $("#button_withdraw").click(
                 if (error) {
                     console.log();
                 } else {
-                    refreshBalance();
+                    refreshAccountInfomation();
                 }
             }
         )
@@ -89,7 +101,7 @@ $("#button_transfer").click(
                     if (error) {
                         console.log(error);
                     } else {
-                        refreshBalance();
+                        refreshAccountInfomation();
                     }
                 }
             )
@@ -105,7 +117,7 @@ $("#button_transfer").click(
                     if (error) {
                         console.log(error);
                     } else {
-                        refreshBalance();
+                        refreshAccountInfomation();
                     }
                 }
             )
