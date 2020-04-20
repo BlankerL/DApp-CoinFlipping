@@ -59,11 +59,11 @@ contract Account {
         user.bindAddress = msg.sender;
     }
 
-    function checkRegistration() external view returns (bool) {
+    function checkRegistration() external view returns (string memory) {
         if (bytes(userList[msg.sender].accountID).length != 0) {
-            return true;
+            return userList[msg.sender].accountID;
         }
-        return false;
+        return userList[msg.sender].accountID;
     }
 
     /**
