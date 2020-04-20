@@ -22,7 +22,7 @@ coinFlipWeb3 = {
     initContract: function() {
         $.getJSON('contracts/CoinFlip.json', function(data) {
             // Get the necessary contract artifact file and instantiate it with truffle-contract.
-            coinFlipWeb3.contract = new web3.eth.Contract(data['abi'], "0xFF472b76B1a023c1dBD3e0d02ba460c417Fec4bf");
+            coinFlipWeb3.contract = new web3.eth.Contract(data['abi'], "0x4B07BAd2bC8425633d9dDB71596E599F81feFcDE");
         });
     },
 };

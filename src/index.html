@@ -12,33 +12,34 @@
     <script src="js/app.js"></script>
 </head>
 <body>
-    <div class="wrapper fadeInDown">
-    <form>
-        <div class="account_information">
+    <div class="account">
+        <span>
             <span>
-                <span>
-                    <b>Your Address</b>
-                </span>
-                <span id="address">Pending</span>
+                <b>Your Address</b>
             </span>
-            <p id="login">
-                Please click <a href="#" onclick="firstTimeLogin();">here</a> to allow us read your selected Ethereum address from MetaMask.
-            </p>
-            <div id="register" style="display: none">
-                You have not register your account yet! Please fill in the account ID and you will be registered!
-                <div>
-                    <form>
-                        <label>
-                            <input placeholder="Account ID">
-                        </label>
-                        <button>
-                            Submit
-                        </button>
-                    </form>
-                </div>
+            <span id="address">Pending</span>
+        </span>
+        <p id="login">
+            Please click <a href="#" onclick="firstTimeLogin();">here</a> to allow us read your selected Ethereum address from MetaMask.
+        </p>
+        <div id="register" style="display: none">
+            You have not register your account yet! Please fill in the account ID and you will be registered!
+            <div>
+                <form>
+                    <label>
+                        <input id="account_id" placeholder="Account ID">
+                    </label>
+                    <button id="register_account">
+                        Submit
+                    </button>
+                </form>
             </div>
         </div>
-    </form>
+        <div id="account_details" style="display: none">
+            <span>
+                <b>Balance</b>
+            </span>
+        </div>
     </div>
     <script>
         async function firstTimeLogin() {
@@ -54,10 +55,16 @@
                 document.getElementById("address").innerText = address;
                 setTimeout(
                     function() {
-                        coinFlipWeb3.contract.methods.checkRegistration().call().then(
-                            result => {
-                                if (!result) {
-                                    $("#register").show();
+                        coinFlipWeb3.contract.methods.checkRegistration().call(
+                            function(error, result) {
+                                if (error) {
+                                    console.log(error);
+                                } else {
+                                    if (!result) {
+                                        $("#register").show();
+                                    } else {
+                                        $("#account_details").show();
+                                    }
                                 }
                             }
                         )
@@ -66,6 +73,23 @@
                 )
             }
         });
+
+        $("#register_account").click(
+            function () {
+                coinFlipWeb3.contract.methods.createAccount($("#account_id").val()).send(
+                    {
+                        from: coinFlipWeb3.web3Provider.selectedAddress
+                    },
+                    function(error, result) {
+                        if (error) {
+                            console.log(error);
+                        } else {
+                            console.log(result);
+                        }
+                    }
+                )
+            }
+        )
     </script>
 </body>
 </html>
