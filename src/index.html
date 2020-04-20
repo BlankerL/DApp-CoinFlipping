@@ -15,7 +15,7 @@
     <div class="account">
         <span>
             <span>
-                <b>Your Address</b>
+                <b>Address</b>
             </span>
             <span id="address">Pending</span>
         </span>
@@ -25,37 +25,78 @@
         <div id="register" style="display: none">
             You have not register your account yet! Please fill in the account ID and you will be registered!
             <div>
-                <form>
+                <form name="registration">
                     <label>
                         <input id="account_id" placeholder="Account ID">
                     </label>
-                    <button id="register_account">
+                    <button id="button_register_account">
                         Submit
                     </button>
                 </form>
             </div>
         </div>
         <div id="account_details" style="display: none">
+            <h5>Account Details</h5>
+            <span>
+                <b>Username</b>
+                <span id="username"></span>
+            </span>
+            <br>
             <span>
                 <b>Balance</b>
+                <span id="balance"></span>
             </span>
+            <form name="deposit">
+                <label>
+                    <input id="deposit_amount" placeholder="Deposit Amount in ETH">
+                </label>
+                <br>
+                <button id="button_deposit" onclick="">
+                    Deposit
+                </button>
+            </form>
+            <form name="withdraw">
+                <label>
+                    <input id="withdraw_amount" placeholder="Withdraw Amount in ETH">
+                </label>
+                <br>
+                <button id="button_withdraw">
+                    Withdraw
+                </button>
+            </form>
+            <form name="transfer">
+                <label>
+                    <input id="transfer_target" placeholder="Receiver's address or ID">
+                </label>
+                <br>
+                <label>
+                    <input id="transfer_amount" placeholder="Transfer Amount in ETH">
+                </label>
+                <br>
+                <button id="button_transfer">
+                    Transfer
+                </button>
+            </form>
         </div>
     </div>
     <script>
-        async function firstTimeLogin() {
-            await ethereum.enable();
+        function firstTimeLogin() {
+            ethereum.enable();
             location.reload();  // Reload until the enable is done.
         }
 
-        $(window).on("load", async function () {
-            await coinFlipWeb3.init();
+        $(window).on("load", function () {
+            coinFlipWeb3.init();
             const address = coinFlipWeb3.web3Provider.selectedAddress;
             if (address != null) {  // If the address has been loaded, check if the account is registered.
                 $("#login").hide();
                 document.getElementById("address").innerText = address;
                 setTimeout(
                     function() {
-                        coinFlipWeb3.contract.methods.checkRegistration().call(
+                        coinFlipWeb3.contractInstance.methods.checkRegistration().call(
+                            {
+                                from: coinFlipWeb3.web3Provider.selectedAddress
+                            },
                             function(error, result) {
                                 if (error) {
                                     console.log(error);
@@ -64,6 +105,7 @@
                                         $("#register").show();
                                     } else {
                                         $("#account_details").show();
+                                        refreshBalance();
                                     }
                                 }
                             }
@@ -73,23 +115,7 @@
                 )
             }
         });
-
-        $("#register_account").click(
-            function () {
-                coinFlipWeb3.contract.methods.createAccount($("#account_id").val()).send(
-                    {
-                        from: coinFlipWeb3.web3Provider.selectedAddress
-                    },
-                    function(error, result) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log(result);
-                        }
-                    }
-                )
-            }
-        )
     </script>
+    <script src="js/account.js"></script>
 </body>
 </html>

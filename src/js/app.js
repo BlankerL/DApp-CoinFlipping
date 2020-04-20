@@ -1,6 +1,7 @@
 coinFlipWeb3 = {
+    contractAddress: "0xC86234c646eD1ab0c102942Ae5D1bE9449030106",
     web3Provider: null,
-    contract: null,
+    contractInstance: null,
 
     init: function() {
         return coinFlipWeb3.initWeb3();
@@ -22,7 +23,7 @@ coinFlipWeb3 = {
     initContract: function() {
         $.getJSON('contracts/CoinFlip.json', function(data) {
             // Get the necessary contract artifact file and instantiate it with truffle-contract.
-            coinFlipWeb3.contract = new web3.eth.Contract(data['abi'], "0x4B07BAd2bC8425633d9dDB71596E599F81feFcDE");
+            coinFlipWeb3.contractInstance = new web3.eth.Contract(data['abi'], coinFlipWeb3.contractAddress);
         });
     },
 };
