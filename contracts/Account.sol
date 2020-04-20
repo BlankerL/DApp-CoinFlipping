@@ -1,7 +1,5 @@
 pragma solidity >=0.4.21 <0.7.0;
 
-/// TODO: Remove the registered, use accountID as the symbol.
-
 contract Account {
     /**
      * User's information
@@ -20,11 +18,11 @@ contract Account {
 
     /**
      * A account will be created if both the address and the account ID is not taken.
-     * @param  accountID The account ID the user would like to use.
+     * @param  accountToRegister The account ID the user would like to use.
      */
-    modifier notRegistered (string memory accountID) {
+    modifier notRegistered (string memory accountToRegister) {
         require (
-            userList[msg.sender].bindAddress != address(0) && bytes(userList[msg.sender].accountID).length == 0,
+            userList[msg.sender].bindAddress == address(0) && bytes(userList[msg.sender].accountID).length == 0 && userList[accountToAddress[accountToRegister]].bindAddress == address(0) && bytes(userList[accountToAddress[accountToRegister]].accountID).length == 0,
             "The address/account ID have already registered!"
         );
         _;
@@ -50,14 +48,14 @@ contract Account {
     }
 
     /**
-     * @param accountID The account ID the user would like to use.
+     * @param accountToRegister The account ID the user would like to use.
      */
-    function createAccount(string memory accountID) public notRegistered(accountID) {
-        // Add the accountID => msg.sender to mapping
-        accountToAddress[accountID] = msg.sender;
+    function createAccount(string memory accountToRegister) public notRegistered(accountToRegister) {
+        // Add the accountToRegister => msg.sender to mapping
+        accountToAddress[accountToRegister] = msg.sender;
         // Add the User struct to userList
         User storage user = userList[msg.sender];
-        user.accountID = accountID;
+        user.accountID = accountToRegister;
         user.bindAddress = msg.sender;
     }
 
