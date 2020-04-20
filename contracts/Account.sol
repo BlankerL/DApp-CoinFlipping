@@ -11,7 +11,6 @@ contract Account {
         string accountID;
         uint balance;
         bool inGame;
-        bool registered;
     }
 
     /// Mapping from accountID to address.
@@ -25,7 +24,7 @@ contract Account {
      */
     modifier notRegistered (string memory accountID) {
         require (
-            !userList[msg.sender].registered && !userList[accountToAddress[accountID]].registered,
+            userList[msg.sender].bindAddress != address(0) && bytes(userList[msg.sender].accountID).length == 0,
             "The address/account ID have already registered!"
         );
         _;
@@ -36,7 +35,7 @@ contract Account {
      */
     modifier registered {
         require (
-            userList[msg.sender].registered,
+            bytes(userList[msg.sender].accountID).length != 0,
             "Your address has not registered yet! Please check again."
         );
         _;
@@ -54,28 +53,25 @@ contract Account {
      * @param accountID The account ID the user would like to use.
      */
     function createAccount(string memory accountID) public notRegistered(accountID) {
-        //
+        // Add the accountID => msg.sender to mapping
         accountToAddress[accountID] = msg.sender;
-        //
+        // Add the User struct to userList
         User storage user = userList[msg.sender];
         user.accountID = accountID;
         user.bindAddress = msg.sender;
-        user.registered = true;
     }
 
     function checkRegistration() external view returns (bool) {
-        return userList[msg.sender].registered;
+        if (bytes(userList[msg.sender].accountID).length != 0) {
+            return true;
+        }
+        return false;
     }
 
     /**
      * User deposit the money to the contract, and the contract will give him a "virtual" balance, similar to deposit fiat money to bank.
      */
-    function deposit() external payable {
-        require (
-            userList[msg.sender].registered,
-            "The address has not registered yet! Please check again."
-        );
-
+    function deposit() external payable registered{
         userList[msg.sender].balance += msg.value;
 
         emit showBalance(userList[msg.sender].balance);
@@ -87,8 +83,9 @@ contract Account {
      * @param amount The amount of balance to transfer to the target registered user.
      */
     function transferToAddress(address toAddress, uint amount) external registered enoughBalance(amount) {
+        // The target should also be a registered account as well
         require (
-            userList[toAddress].registered,
+            bytes(userList[toAddress].accountID).length != 0,
             "The target address have not registered yet! Please check again."
         );
         userList[msg.sender].balance -= amount;
@@ -105,8 +102,9 @@ contract Account {
      * @param amount The amount of balance to transfer to the target registered user.
      */
     function transferToID(string memory toAccountID, uint amount) public registered enoughBalance(amount) {
+        // The target should also be a registered account as well
         require (
-            userList[accountToAddress[toAccountID]].registered,
+            bytes(userList[accountToAddress[toAccountID]].accountID).length != 0,
             "The target address have not registered yet! Please check again."
         );
         userList[msg.sender].balance -= amount;
