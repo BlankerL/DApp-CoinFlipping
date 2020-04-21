@@ -53,7 +53,7 @@ contract CoinFlip is Account{
     /// gameID => Game struct mapping
     mapping (uint => Game) gameHistory;
 
-    function checkWaiting() external view returns (uint) {
+    function currentGameStatus() external view returns (uint) {
         return gameHistory[gameID].status;
     }
 
@@ -67,6 +67,7 @@ contract CoinFlip is Account{
      */
     function initializeGame(uint betValue) external {
         require(gameHistory[gameID].status == 0, "There is a game waiting for player, you cannot start a new game now!");
+        require(userList[msg.sender].balance >= betValue, "You do not have sufficient balance.");
         Game storage game = gameHistory[gameID];
         game.ID = gameID;
         game.player[0] = msg.sender;
@@ -84,6 +85,7 @@ contract CoinFlip is Account{
      */
     function joinGame() external {
         require(gameHistory[gameID].status == 1, "There is no game waiting for player, please initiate a game!");
+        require(userList[msg.sender].balance >= gameHistory[gameID].betValue, "You do not have sufficient balance.");
         // The player initialize the game cannot join it twice.
         require(gameHistory[gameID].player[0] != msg.sender, "You are already in this game!");
 
@@ -109,7 +111,7 @@ contract CoinFlip is Account{
     /**
      * @return current participants in this round
      */
-    function checkInGamePlayer() external view returns (address[2] memory) {
+    function currentInGamePlayer() external view returns (address[2] memory) {
         return gameHistory[gameID].player;
     }
 
