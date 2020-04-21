@@ -107,6 +107,13 @@ contract CoinFlip is Account{
     }
 
     /**
+     * @return current participants in this round
+     */
+    function checkInGamePlayer() external view returns (address[2] memory) {
+        return gameHistory[gameID].player;
+    }
+
+    /**
      * Players submit their hash values through this function.
      * @param hashValue each player submit the hash value generated from their clear text.
      * @dev once both players submit their hash values, the bothSubmitHash will be true,
