@@ -27,12 +27,11 @@ contract CoinFlip is Account{
     uint submitClearTextCount = 0;
     /// The front-end will read this value to determine when the user can reveal the clear text.
     bool bothSubmitHash = false;
-    /// Whether there is a table waiting for player to join
-    bool currentlyWaiting = false;
 
     /**
      * Struct for Game
      * @param gameID the self-increasing ID of the game, the gameID will increase by 1 in each round
+     * @param status the status of the game. 0: not started, 1: waiting for participant, 2: in process, 3: finished
      * @param player the players participating in the game
      * @param betValue provided by the first player initializing the game
      * @param winner the winner of this round
@@ -41,6 +40,7 @@ contract CoinFlip is Account{
      */
     struct Game {
         uint ID;
+        uint status;
         address[2] player;
         uint betValue;
         address winner;
@@ -53,8 +53,8 @@ contract CoinFlip is Account{
     /// gameID => Game struct mapping
     mapping (uint => Game) gameHistory;
 
-    function checkWaiting() external view returns (bool) {
-        return currentlyWaiting;
+    function checkWaiting() external view returns (uint) {
+        return gameHistory[gameID].status;
     }
 
     /**
@@ -66,7 +66,7 @@ contract CoinFlip is Account{
      *         and the front-end will not allow user to start a new game, they can only join the current one or wait.
      */
     function initializeGame(uint betValue) external {
-        require(!currentlyWaiting, "There is a game waiting for player, you cannot start a new game now!");
+        require(gameHistory[gameID].status == 0, "There is a game waiting for player, you cannot start a new game now!");
         Game storage game = gameHistory[gameID];
         game.ID = gameID;
         game.player[0] = msg.sender;
@@ -75,7 +75,7 @@ contract CoinFlip is Account{
         userList[msg.sender].balance -= betValue;
         banker.gameDeposit += betValue;
 
-        currentlyWaiting = true;
+        gameHistory[gameID].status = 1;
     }
 
     /**
@@ -83,7 +83,7 @@ contract CoinFlip is Account{
      * Once the new player join the game, the betValue will be deducted and transfer to the banker.
      */
     function joinGame() external {
-        require(currentlyWaiting, "There is no game waiting for player, please initiate a game!");
+        require(gameHistory[gameID].status == 1, "There is no game waiting for player, please initiate a game!");
         // The player initialize the game cannot join it twice.
         require(gameHistory[gameID].player[0] != msg.sender, "You are already in this game!");
 
@@ -91,6 +91,8 @@ contract CoinFlip is Account{
 
         userList[msg.sender].balance -= gameHistory[gameID].betValue;
         banker.gameDeposit += gameHistory[gameID].betValue;
+
+        gameHistory[gameID].status = 2;
     }
 
     /**
@@ -103,8 +105,6 @@ contract CoinFlip is Account{
         );
         _;
     }
-
-    /// TODO: gameStarted() modifier might be needed to make sure players can move after 2 players are in the game.
 
     /**
      * Players submit their hash values through this function.
@@ -204,10 +204,11 @@ contract CoinFlip is Account{
      * House cleaning process to release resources and prepare for the next round.
      */
     function houseCleaning() private {
+        gameHistory[gameID].status = 3;
+
         delete bothSubmitHash;
         delete submitHashCount;
         delete submitClearTextCount;
-        delete currentlyWaiting;
 
         gameID += 1;
     }

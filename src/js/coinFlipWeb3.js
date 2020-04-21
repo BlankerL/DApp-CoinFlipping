@@ -1,5 +1,5 @@
 coinFlipWeb3 = {
-    contractAddress: "0x4cd8a96622dB8e843Fce3134faCF98FA2c13ADE6",
+    contractAddress: "0x7a14Fbf94e944769c125e53e4A8993eC65322764",
     web3Provider: null,
     contractInstance: null,
 
