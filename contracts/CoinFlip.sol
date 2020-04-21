@@ -53,6 +53,10 @@ contract CoinFlip is Account{
     /// gameID => Game struct mapping
     mapping (uint => Game) gameHistory;
 
+    function checkWaiting() external view returns (bool) {
+        return currentlyWaiting;
+    }
+
     /**
      * Initialize a game
      * a game struct will be initialize and the betValue will be move from player's balance to banker's
