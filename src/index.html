@@ -12,7 +12,7 @@
     <script src="js/coinFlipWeb3.js"></script>
 </head>
 <body>
-    <div class="account">
+    <div id="account_information_panel">
         <span>
             <span>
                 <b>Address</b>
@@ -27,7 +27,7 @@
             <div>
                 <form name="registration">
                     <label>
-                        <input id="account_id" placeholder="Account ID">
+                        <input type="text" id="account_id" placeholder="Account ID">
                     </label>
                     <button id="button_register_account">
                         Submit
@@ -48,7 +48,7 @@
             </span>
             <form name="deposit">
                 <label>
-                    <input id="deposit_amount" placeholder="Deposit Amount in ETH">
+                    <input type="text" id="deposit_amount" placeholder="Deposit Amount in ETH">
                 </label>
                 <br>
                 <button id="button_deposit" onclick="">
@@ -57,7 +57,7 @@
             </form>
             <form name="withdraw">
                 <label>
-                    <input id="withdraw_amount" placeholder="Withdraw Amount in ETH">
+                    <input type="text" id="withdraw_amount" placeholder="Withdraw Amount in ETH">
                 </label>
                 <br>
                 <button id="button_withdraw">
@@ -66,11 +66,11 @@
             </form>
             <form name="transfer">
                 <label>
-                    <input id="transfer_target" placeholder="Receiver's address or ID">
+                    <input type="text" id="transfer_target" placeholder="Receiver's address or ID">
                 </label>
                 <br>
                 <label>
-                    <input id="transfer_amount" placeholder="Transfer Amount in ETH">
+                    <input type="text" id="transfer_amount" placeholder="Transfer Amount in ETH">
                 </label>
                 <br>
                 <button id="button_transfer">
@@ -81,9 +81,33 @@
             <h5>Game History</h5>
         </div>
     </div>
-    <div id="game">
+    <div id="game_panel">
         <h1>Game</h1>
-
+        <div id="initialize_game" style="display: none">
+            <form id="form_initialize_game">
+                <label>
+                    <input type="text" id="input_betValue" placeholder="Bet Value in ETH">
+                </label>
+                <button id="button_initialize_game">
+                    Initialize Game
+                </button>
+            </form>
+        </div>
+        <div id="joinGame" style="display: none">
+            <span>
+                <b>Bet Value</b>
+                <span id="betValue">Pending</span>
+            </span>
+            <button id="button_join_game">
+                Join Game
+            </button>
+        </div>
+        <div id="inGame" style="display: none">
+            Game Box
+        </div>
+        <div id="waitingList" style="display: none">
+            Others are playing game right now, please wait.
+        </div>
     </div>
     <script>
         function firstTimeLogin() {
@@ -111,7 +135,8 @@
                                         $("#register").show();
                                     } else {  // The length of account ID is sufficient, show account information
                                         $("#account_details").show();
-                                        refreshAccountInfomation();
+                                        refreshAccountInformation();
+                                        checkGameStatus();
                                     }
                                 }
                             }

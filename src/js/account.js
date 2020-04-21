@@ -1,4 +1,4 @@
-function refreshAccountInfomation() {
+function refreshAccountInformation() {
     coinFlipWeb3.contractInstance.methods.checkBalance().call(
         {
             from: coinFlipWeb3.web3Provider.selectedAddress
@@ -62,7 +62,7 @@ $("#button_deposit").click(
                 if (error) {
                     console.log(error);
                 } else {
-                    refreshAccountInfomation()
+                    refreshAccountInformation()
                 }
             }
         )
@@ -82,7 +82,7 @@ $("#button_withdraw").click(
                 if (error) {
                     console.log();
                 } else {
-                    refreshAccountInfomation();
+                    refreshAccountInformation();
                 }
             }
         )
@@ -106,7 +106,7 @@ $("#button_transfer").click(
                     if (error) {
                         console.log(error);
                     } else {
-                        refreshAccountInfomation();
+                        refreshAccountInformation();
                     }
                 }
             )
@@ -122,7 +122,7 @@ $("#button_transfer").click(
                     if (error) {
                         console.log(error);
                     } else {
-                        refreshAccountInfomation();
+                        refreshAccountInformation();
                     }
                 }
             )
