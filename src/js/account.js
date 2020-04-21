@@ -28,20 +28,25 @@ function refreshAccountInfomation() {
 $("#button_register_account").click(
     function (e) {
         e.preventDefault();
-        coinFlipWeb3.contractInstance.methods.createAccount(
-            $("#account_id").val()
-        ).send(
-            {
-                from: coinFlipWeb3.web3Provider.selectedAddress
-            },
-            function(error, result) {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log(result);
+        let account = $("#account_id").val()
+        if (account.substring(0, 2) === '0x') {
+            alert("You cannot set account ID start with \"0x\"!");
+        } else {
+            coinFlipWeb3.contractInstance.methods.createAccount(
+                $("#account_id").val()
+            ).send(
+                {
+                    from: coinFlipWeb3.web3Provider.selectedAddress
+                },
+                function(error, result) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        console.log(result);
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 )
 
