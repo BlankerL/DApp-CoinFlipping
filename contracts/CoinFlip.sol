@@ -116,6 +116,13 @@ contract CoinFlip is Account{
     }
 
     /**
+     * @return bet value for current round
+     */
+    function currentGameBetValue() external view returns (uint) {
+        return gameHistory[gameID].betValue;
+    }
+
+    /**
      * Players submit their hash values through this function.
      * @param hashValue each player submit the hash value generated from their clear text.
      * @dev once both players submit their hash values, the bothSubmitHash will be true,
