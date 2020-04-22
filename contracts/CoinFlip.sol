@@ -216,6 +216,10 @@ contract CoinFlip is Account{
         }
     }
 
+    function bothSubmitHashCheck() external view enrolledPlayer returns (bool){
+        return bothSubmitHash;
+    }
+
     /**
      * House cleaning process to release resources and prepare for the next round.
      */
