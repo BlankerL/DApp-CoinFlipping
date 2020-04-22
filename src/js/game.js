@@ -88,3 +88,67 @@ $("#button_join_game").click(
         )
     }
 )
+
+$("#button_flip_coin").click(
+    function (e) {
+        e.preventDefault();
+        const randomNumber = Math.floor(Math.random() * 1e+17);
+        console.log(randomNumber);
+        submitHash(randomNumber);
+    }
+)
+
+function submitHash(clearText) {
+    console.log(typeof (''+clearText));
+    coinFlipWeb3.contractInstance.methods.submitHash(
+        web3.utils.sha3("0x" + web3.utils.leftPad("" + clearText, 64, 0))
+    ).send(
+        {
+            from: coinFlipWeb3.web3Provider.selectedAddress
+        },
+        function (error, result) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log(result);
+            }
+        }
+    )
+}
+
+function bothSubmitHashCheck() {
+    coinFlipWeb3.contractInstance.methods.bothSubmitHashCheck().call(
+        {
+            from: coinFlipWeb3.web3Provider.selectedAddress
+        },
+        function (error, result) {
+            if (error) {
+                console.log(error);
+            } else {
+                if (result) {
+                    submitClearText();
+                } else {
+                    // TODO: Wait for 1 second and check again.
+                    //   Should write something on the page to inform the user.
+                }
+            }
+        }
+    )
+}
+
+function submitClearText(clearText) {
+    coinFlipWeb3.contractInstance.methods.submitClearText(
+        clearText
+    ).send(
+        {
+            from: coinFlipWeb3.web3Provider.selectedAddress
+        },
+        function (error, result) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log(result);
+            }
+        }
+    )
+}

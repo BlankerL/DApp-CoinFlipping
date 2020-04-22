@@ -12,101 +12,106 @@
     <script src="js/coinFlipWeb3.js"></script>
 </head>
 <body>
-    <div id="account_information_panel">
+    <div class="row" style="padding-left: 1em;">
+        <div id="account_information_panel" class="column">
         <span>
             <span>
                 <b>Address</b>
             </span>
+            <br>
             <span id="address">Pending</span>
         </span>
-        <p id="login">
-            Please click <a href="#" onclick="firstTimeLogin();">here</a> to allow us read your selected Ethereum address from MetaMask.
-        </p>
-        <div id="register" style="display: none">
-            You have not register your account yet! Please fill in the account ID and you will be registered!
-            <div>
-                <form name="registration">
-                    <label>
-                        <input type="text" id="account_id" placeholder="Account ID">
-                    </label>
-                    <button id="button_register_account">
-                        Submit
-                    </button>
-                </form>
+            <p id="login">
+                Please click <a href="#" onclick="firstTimeLogin();">here</a> to allow us read your selected Ethereum address from MetaMask.
+            </p>
+            <div id="register" style="display: none">
+                You have not register your account yet! Please fill in the account ID and you will be registered!
+                <div>
+                    <form name="registration">
+                        <label>
+                            <input type="text" id="account_id" placeholder="Account ID">
+                        </label>
+                        <button id="button_register_account">
+                            Submit
+                        </button>
+                    </form>
+                </div>
             </div>
-        </div>
-        <div id="account_details" style="display: none">
-            <h5>Account Details</h5>
-            <span>
+            <div id="account_details" style="display: none">
+                <h5>Account Details</h5>
+                <span>
                 <b>Username</b>
                 <span id="username"></span>
             </span>
-            <br>
-            <span>
+                <br>
+                <span>
                 <b>Balance</b>
                 <span id="balance"></span>
             </span>
-            <form name="deposit">
-                <label>
-                    <input type="text" id="deposit_amount" placeholder="Deposit Amount in ETH">
-                </label>
-                <br>
-                <button id="button_deposit" onclick="">
-                    Deposit
-                </button>
-            </form>
-            <form name="withdraw">
-                <label>
-                    <input type="text" id="withdraw_amount" placeholder="Withdraw Amount in ETH">
-                </label>
-                <br>
-                <button id="button_withdraw">
-                    Withdraw
-                </button>
-            </form>
-            <form name="transfer">
-                <label>
-                    <input type="text" id="transfer_target" placeholder="Receiver's address or ID">
-                </label>
-                <br>
-                <label>
-                    <input type="text" id="transfer_amount" placeholder="Transfer Amount in ETH">
-                </label>
-                <br>
-                <button id="button_transfer">
-                    Transfer
-                </button>
-            </form>
-            <h5>Transaction History</h5>
-            <h5>Game History</h5>
+                <form name="deposit">
+                    <label>
+                        <input type="text" id="deposit_amount" placeholder="Deposit Amount in ETH">
+                    </label>
+                    <br>
+                    <button id="button_deposit" onclick="">
+                        Deposit
+                    </button>
+                </form>
+                <form name="withdraw">
+                    <label>
+                        <input type="text" id="withdraw_amount" placeholder="Withdraw Amount in ETH">
+                    </label>
+                    <br>
+                    <button id="button_withdraw">
+                        Withdraw
+                    </button>
+                </form>
+                <form name="transfer">
+                    <label>
+                        <input type="text" id="transfer_target" placeholder="Receiver's address or ID">
+                    </label>
+                    <br>
+                    <label>
+                        <input type="text" id="transfer_amount" placeholder="Transfer Amount in ETH">
+                    </label>
+                    <br>
+                    <button id="button_transfer">
+                        Transfer
+                    </button>
+                </form>
+                <h5>Transaction History</h5>
+                <h5>Game History</h5>
+            </div>
         </div>
-    </div>
-    <div id="game_panel">
-        <h1>Game</h1>
-        <div id="initialize_game" style="display: none">
-            <form id="form_initialize_game">
-                <label>
-                    <input type="text" id="input_betValue" placeholder="Bet Value in ETH">
-                </label>
-                <button id="button_initialize_game">
-                    Initialize Game
-                </button>
-            </form>
-        </div>
-        <div id="joinGame" style="display: none">
+        <div id="game_panel" class="column">
+            <h1>Game</h1>
+            <div id="initialize_game" style="display: none">
+                <form id="form_initialize_game">
+                    <label>
+                        <input type="text" id="input_betValue" placeholder="Bet Value in ETH">
+                    </label>
+                    <button id="button_initialize_game">
+                        Initialize Game
+                    </button>
+                </form>
+            </div>
+            <div id="joinGame" style="display: none">
             <span>
                 <b>Bet Value</b>
                 <span id="betValue">Pending</span>
             </span>
-            <button id="button_join_game">
-                Join Game
-            </button>
-        </div>
-        <div id="inGame" style="display: none">
-            Game Box
-        </div>
-        <div id="waitingList" style="display: none">
-            Others are playing game right now, please wait.
+                <button id="button_join_game">
+                    Join Game
+                </button>
+            </div>
+            <div id="inGame" style="display: none">
+                <button id="button_flip_coin">
+                    Flip the Coin
+                </button>
+            </div>
+            <div id="waitingList" style="display: none">
+                Others are playing game right now, please wait.
+            </div>
         </div>
     </div>
     <script>
