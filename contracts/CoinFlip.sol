@@ -224,8 +224,26 @@ contract CoinFlip is Account{
         return bothSubmitHash;
     }
 
-    function lastGameHistory() external view returns (uint, uint, address) {
-        return (gameHistory[userList[msg.sender].lastGameID].ID, gameHistory[userList[msg.sender].lastGameID].betValue, gameHistory[userList[msg.sender].lastGameID].winner);
+    /**
+     * @return game_id of last game
+     * @return bet_value of last game
+     * @return total_player number of last game
+     * @return your_index of the msg.sender
+     */
+    function lastGameHistory() external view returns (uint game_id, uint bet_value, uint total_player, uint your_index) {
+        uint userIndex = 0;
+        for (uint i = 0; i < 2; i++) {
+            if (msg.sender == gameHistory[userList[msg.sender].lastGameID].player[i]) {
+                userIndex = i;
+                break;
+            }
+        }
+        return (
+        gameHistory[userList[msg.sender].lastGameID].ID,
+        gameHistory[userList[msg.sender].lastGameID].betValue,
+        gameHistory[userList[msg.sender].lastGameID].player.length,
+        userIndex
+        );
     }
 
     /**
