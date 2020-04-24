@@ -234,6 +234,10 @@ contract CoinFlip is Account{
         delete submitHashCount;
         delete submitClearTextCount;
 
+        // Clear submitted hash value
+        delete submittedHashValue[gameHistory[gameID].player[0]];
+        delete submittedHashValue[gameHistory[gameID].player[1]];
+
         gameID += 1;
     }
 }
