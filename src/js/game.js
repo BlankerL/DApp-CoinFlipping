@@ -154,8 +154,7 @@ function lastGameHistory() {
             if (error) {
                 console.log(error);
             } else {
-                console.log(result);
-                if (result[0] != 0) {
+                if (result[0] !== 0) {
                     document.getElementById('last_game_id').innerText = result[0];
                     document.getElementById('last_game_bet_value').innerText = web3.utils.fromWei(result[1], 'ether') + ' ETH';
                     document.getElementById('last_game_total_player').innerText = result[2];
