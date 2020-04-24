@@ -84,7 +84,7 @@ function joinGame() {
 }
 
 function flipCoin() {
-    const randomNumber = Math.floor(Math.random() * 1e+10);
+    const randomNumber = Math.floor(Math.random() * 1e+16);
     submitHash(randomNumber);
     let submitHashCheckTimer = setInterval(
         function bothSubmitHashCheck() {
@@ -128,7 +128,8 @@ function submitHash(clearText) {
 
 function submitClearText(clearText) {
     coinFlipWeb3.contractInstance.methods.submitClearText(
-        clearText
+        // Use the BigNumber to fix the invalid value problem.
+        web3.utils.toBN("" + clearText)
     ).send(
         {
             from: coinFlipWeb3.web3Provider.selectedAddress,
