@@ -72,8 +72,6 @@ contract Account {
      */
     function deposit() external payable registered{
         userList[msg.sender].balance += msg.value;
-
-        emit showBalance(userList[msg.sender].balance);
     }
 
     /**
@@ -89,11 +87,7 @@ contract Account {
         );
         userList[msg.sender].balance -= amount;
         userList[toAddress].balance += amount;
-
-        emit showBalance(userList[msg.sender].balance);
     }
-
-    event showBalance(uint balance);
 
     /**
      * User transfer his/her deposit to another registered user with the accountID.
@@ -108,8 +102,6 @@ contract Account {
         );
         userList[msg.sender].balance -= amount;
         userList[accountToAddress[toAccountID]].balance += amount;
-
-        emit showBalance(userList[msg.sender].balance);
     }
 
     /**
@@ -119,8 +111,6 @@ contract Account {
     function withdraw(uint amount) external payable registered enoughBalance(amount) {
         userList[msg.sender].balance -= amount;
         msg.sender.transfer(amount);
-
-        emit showBalance(userList[msg.sender].balance);
     }
 
     /**
