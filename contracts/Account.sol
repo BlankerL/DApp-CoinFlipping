@@ -9,6 +9,7 @@ contract Account {
         string accountID;
         uint balance;
         bool inGame;
+        uint lastGameID;
     }
 
     /// Mapping from accountID to address.
