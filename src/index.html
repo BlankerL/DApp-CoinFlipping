@@ -12,8 +12,9 @@
     <script src="js/coinFlipWeb3.js"></script>
 </head>
 <body>
-    <div class="row" style="padding-left: 1em;">
-        <div id="account_information_panel" class="column">
+    <div class="container">
+        <div class="row">
+            <div id="account_information_panel" class="column">
         <span>
             <span>
                 <b>Address</b>
@@ -21,103 +22,125 @@
             <br>
             <span id="address">Pending</span>
         </span>
-            <p id="login">
-                Please click <a href="#" onclick="firstTimeLogin();">here</a> to allow us read your selected Ethereum address from MetaMask.
-            </p>
-            <div id="register" style="display: none">
-                You have not register your account yet! Please fill in the account ID and you will be registered!
-                <div>
-                    <form name="registration">
+                <p id="login">
+                    Please click <a href="#" onclick="firstTimeLogin();">here</a> to allow us read your selected Ethereum address from MetaMask.
+                </p>
+                <div id="register" style="display: none">
+                    You have not register your account yet! Please fill in the account ID and you will be registered!
+                    <div>
+                        <form name="registration">
+                            <label>
+                                <input type="text" id="account_id" placeholder="Account ID">
+                            </label>
+                            <button type="button" id="button_register_account" onclick="createAccount();">
+                                Register
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div id="account_details" style="display: none">
+                    <h5>Account Details</h5>
+                    <span>
+                <b>Username</b>
+                <span id="username"></span>
+            </span>
+                    <br>
+                    <span>
+                <b>Balance</b>
+                <span id="balance"></span>
+            </span>
+                    <form name="deposit">
                         <label>
-                            <input type="text" id="account_id" placeholder="Account ID">
+                            <input type="text" id="deposit_amount" placeholder="Deposit Amount in ETH">
                         </label>
-                        <button type="button" id="button_register_account" onclick="createAccount();">
-                            Register
+                        <br>
+                        <button type="button" id="button_deposit" onclick="depositEther();">
+                            Deposit
+                        </button>
+                    </form>
+                    <form name="withdraw">
+                        <label>
+                            <input type="text" id="withdraw_amount" placeholder="Withdraw Amount in ETH">
+                        </label>
+                        <br>
+                        <button type="button" id="button_withdraw" onclick="withdrawEther();">
+                            Withdraw
+                        </button>
+                    </form>
+                    <form name="transfer">
+                        <label>
+                            <input type="text" id="transfer_target" placeholder="Receiver's address or ID">
+                        </label>
+                        <br>
+                        <label>
+                            <input type="text" id="transfer_amount" placeholder="Transfer Amount in ETH">
+                        </label>
+                        <br>
+                        <button type="button" id="button_transfer" onclick="transferEther();">
+                            Transfer
                         </button>
                     </form>
                 </div>
             </div>
-            <div id="account_details" style="display: none">
-                <h5>Account Details</h5>
-                <span>
-                <b>Username</b>
-                <span id="username"></span>
-            </span>
-                <br>
-                <span>
-                <b>Balance</b>
-                <span id="balance"></span>
-            </span>
-                <form name="deposit">
-                    <label>
-                        <input type="text" id="deposit_amount" placeholder="Deposit Amount in ETH">
-                    </label>
-                    <br>
-                    <button type="button" id="button_deposit" onclick="depositEther();">
-                        Deposit
-                    </button>
-                </form>
-                <form name="withdraw">
-                    <label>
-                        <input type="text" id="withdraw_amount" placeholder="Withdraw Amount in ETH">
-                    </label>
-                    <br>
-                    <button type="button" id="button_withdraw" onclick="withdrawEther();">
-                        Withdraw
-                    </button>
-                </form>
-                <form name="transfer">
-                    <label>
-                        <input type="text" id="transfer_target" placeholder="Receiver's address or ID">
-                    </label>
-                    <br>
-                    <label>
-                        <input type="text" id="transfer_amount" placeholder="Transfer Amount in ETH">
-                    </label>
-                    <br>
-                    <button type="button" id="button_transfer" onclick="transferEther();">
-                        Transfer
-                    </button>
-                </form>
-            </div>
-        </div>
-        <div id="game_panel" class="column">
-            <h1>Game</h1>
-            <div id="initialize_game" style="display: none">
-                <form id="form_initialize_game">
-                    <label>
-                        <input type="text" id="input_betValue" placeholder="Bet Value in ETH">
-                    </label>
-                    <button type="button" id="button_initialize_game" onclick="initializeGame();">
-                        Initialize Game
-                    </button>
-                </form>
-            </div>
-            <div id="joinGame" style="display: none">
+            <div id="game_panel" class="column" style="display: none">
+                <h1>Game</h1>
+                <div id="initialize_game" style="display: none">
+                    <form id="form_initialize_game">
+                        <label>
+                            <input type="text" id="input_betValue" placeholder="Bet Value in ETH">
+                        </label>
+                        <button type="button" id="button_initialize_game" onclick="initializeGame();">
+                            Initialize Game
+                        </button>
+                    </form>
+                </div>
+                <div id="joinGame" style="display: none">
             <span>
                 <b>Bet Value</b>
                 <span id="betValue">Pending</span>
             </span>
-                <button type="button" id="button_join_game" onclick="joinGame();">
-                    Join Game
-                </button>
-            </div>
-            <div id="inGame" style="display: none">
-                <button type="button" id="button_flip_coin" onclick="flipCoin();">
-                    Flip the Coin
-                </button>
-            </div>
-            <div id="waitingList" style="display: none">
-                Others are playing game right now, please wait.
+                    <button type="button" id="button_join_game" onclick="joinGame();">
+                        Join Game
+                    </button>
+                </div>
+                <div id="inGame" style="display: none">
+                    <button type="button" id="button_flip_coin" onclick="flipCoin();">
+                        Flip the Coin
+                    </button>
+                </div>
+                <div id="waitingList" style="display: none">
+                    Others are playing game right now, please wait.
+                </div>
             </div>
         </div>
-    </div>
-    <div class="row" style="padding-left: 1em;">
-        <div id="transaction_history" class="column">
-            <h5>Transaction History</h5>
-        </div>
-        <div id="game_history" class="column">
-            <h5>Game History</h5>
+        <div class="row">
+            <div id="game_history_panel" class="column" style="display: none">
+                <h5>Last Game History</h5>
+                <div id="game_history">
+                    <p>
+                        <b>Game ID</b>
+                        <span id="last_game_id"></span>
+                    </p>
+                    <p>
+                        <b>Bet Value</b>
+                        <span id="last_game_bet_value"></span>
+                    </p>
+                    <p>
+                        <b>Total Player</b>
+                        <span id="last_game_total_player"></span>
+                    </p>
+                    <p>
+                        <b>Your Index</b>
+                        <span id="last_game_your_index"></span>
+                    </p>
+                </div>
+            </div>
+            <div id="transaction_history_panel" class="column" style="display: none">
+                <h5>Transaction History</h5>
+                <div id="transaction_history">
+
+                </div>
+            </div>
         </div>
     </div>
     <script>
@@ -146,8 +169,12 @@
                                         $("#register").show();
                                     } else {  // The length of account ID is sufficient, show account information
                                         $("#account_details").show();
+                                        $("#game_panel").show();
+                                        $("#game_history_panel").show();
+                                        $("#transaction_history_panel").show();
                                         checkBalance();
                                         checkGameStatus();
+                                        lastGameHistory();
                                     }
                                 }
                             }
