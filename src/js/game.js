@@ -22,7 +22,7 @@ function checkGameStatus() {
                                 if (gameStatus === '1') {
                                     if (inGamePlayer.includes(coinFlipWeb3.web3Provider.selectedAddress)) {
                                         console.log('This person is in the game.');
-                                        // This person is already in the game.
+                                        // This person is already in the game. Show waiting tab.
                                     } else {
                                         console.log('This person is not in the game.');
                                         $("#joinGame").show();
@@ -85,7 +85,6 @@ function joinGame() {
 
 function flipCoin() {
     const randomNumber = Math.floor(Math.random() * 1e+10);
-    console.log("random number: " + randomNumber);
     submitHash(randomNumber);
     let submitHashCheckTimer = setInterval(
         function bothSubmitHashCheck() {
@@ -111,7 +110,6 @@ function flipCoin() {
 }
 
 function submitHash(clearText) {
-    console.log("Hash: " + web3.utils.sha3("0x" + web3.utils.leftPad(web3.utils.numberToHex(clearText).substring(2,), 64, 0)));
     coinFlipWeb3.contractInstance.methods.submitHash(
         web3.utils.sha3("0x" + web3.utils.leftPad(web3.utils.numberToHex(clearText).substring(2,), 64, 0))
     ).send(

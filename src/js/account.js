@@ -30,7 +30,6 @@ function checkRegistration() {
 
 function createAccount() {
     let account = $("#account_id").val();
-    console.log(account);
     if (account.substring(0, 2) === '0x') {
         alert("You cannot set account ID start with \"0x\"!");
     } else {
@@ -77,7 +76,7 @@ function withdrawEther() {
         },
         function (error, result) {
             if (error) {
-                console.log();
+                console.log(error);
             } else {
                 alert('You have successfully withdrawn ' + $("#withdraw_amount").val() + " ETH!");
                 checkBalance();
@@ -88,7 +87,6 @@ function withdrawEther() {
 
 function transferEther() {
     const target_account = $("#transfer_target").val()
-    console.log(target_account.substring(0, 2));
     if (target_account.substring(0, 2) === '0x') {  // Address starts with '0x'
         coinFlipWeb3.contractInstance.methods.transferToAddress(
             target_account,
