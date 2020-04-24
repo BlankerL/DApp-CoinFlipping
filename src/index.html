@@ -31,8 +31,8 @@
                         <label>
                             <input type="text" id="account_id" placeholder="Account ID">
                         </label>
-                        <button id="button_register_account">
-                            Submit
+                        <button type="button" id="button_register_account" onclick="createAccount();">
+                            Register
                         </button>
                     </form>
                 </div>
@@ -53,7 +53,7 @@
                         <input type="text" id="deposit_amount" placeholder="Deposit Amount in ETH">
                     </label>
                     <br>
-                    <button id="button_deposit" onclick="">
+                    <button type="button" id="button_deposit" onclick="depositEther();">
                         Deposit
                     </button>
                 </form>
@@ -62,7 +62,7 @@
                         <input type="text" id="withdraw_amount" placeholder="Withdraw Amount in ETH">
                     </label>
                     <br>
-                    <button id="button_withdraw">
+                    <button type="button" id="button_withdraw" onclick="withdrawEther();">
                         Withdraw
                     </button>
                 </form>
@@ -75,12 +75,10 @@
                         <input type="text" id="transfer_amount" placeholder="Transfer Amount in ETH">
                     </label>
                     <br>
-                    <button id="button_transfer">
+                    <button type="button" id="button_transfer" onclick="transferEther();">
                         Transfer
                     </button>
                 </form>
-                <h5>Transaction History</h5>
-                <h5>Game History</h5>
             </div>
         </div>
         <div id="game_panel" class="column">
@@ -90,7 +88,7 @@
                     <label>
                         <input type="text" id="input_betValue" placeholder="Bet Value in ETH">
                     </label>
-                    <button id="button_initialize_game">
+                    <button type="button" id="button_initialize_game" onclick="initializeGame();">
                         Initialize Game
                     </button>
                 </form>
@@ -100,18 +98,26 @@
                 <b>Bet Value</b>
                 <span id="betValue">Pending</span>
             </span>
-                <button id="button_join_game">
+                <button type="button" id="button_join_game" onclick="joinGame();">
                     Join Game
                 </button>
             </div>
             <div id="inGame" style="display: none">
-                <button id="button_flip_coin">
+                <button type="button" id="button_flip_coin" onclick="flipCoin();">
                     Flip the Coin
                 </button>
             </div>
             <div id="waitingList" style="display: none">
                 Others are playing game right now, please wait.
             </div>
+        </div>
+    </div>
+    <div class="row" style="padding-left: 1em;">
+        <div id="transaction_history" class="column">
+            <h5>Transaction History</h5>
+        </div>
+        <div id="game_history" class="column">
+            <h5>Game History</h5>
         </div>
     </div>
     <script>
@@ -140,7 +146,7 @@
                                         $("#register").show();
                                     } else {  // The length of account ID is sufficient, show account information
                                         $("#account_details").show();
-                                        refreshAccountInformation();
+                                        checkBalance();
                                         checkGameStatus();
                                     }
                                 }

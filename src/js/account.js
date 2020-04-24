@@ -1,4 +1,4 @@
-function refreshAccountInformation() {
+function checkBalance() {
     coinFlipWeb3.contractInstance.methods.checkBalance().call(
         {
             from: coinFlipWeb3.web3Provider.selectedAddress
@@ -11,6 +11,9 @@ function refreshAccountInformation() {
             }
         }
     )
+}
+
+function checkRegistration() {
     coinFlipWeb3.contractInstance.methods.checkRegistration().call(
         {
             from: coinFlipWeb3.web3Provider.selectedAddress
@@ -25,107 +28,101 @@ function refreshAccountInformation() {
     )
 }
 
-$("#button_register_account").click(
-    function (e) {
-        e.preventDefault();
-        let account = $("#account_id").val()
-        if (account.substring(0, 2) === '0x') {
-            alert("You cannot set account ID start with \"0x\"!");
-        } else {
-            coinFlipWeb3.contractInstance.methods.createAccount(
-                $("#account_id").val()
-            ).send(
-                {
-                    from: coinFlipWeb3.web3Provider.selectedAddress
-                },
-                function(error, result) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        console.log(result);
-                    }
-                }
-            )
-        }
-    }
-)
-
-$("#button_deposit").click(
-    function (e) {
-        e.preventDefault();
-        coinFlipWeb3.contractInstance.methods.deposit().send(
+function createAccount() {
+    let account = $("#account_id").val();
+    console.log(account);
+    if (account.substring(0, 2) === '0x') {
+        alert("You cannot set account ID start with \"0x\"!");
+    } else {
+        coinFlipWeb3.contractInstance.methods.createAccount(
+            account
+        ).send(
             {
-                from: coinFlipWeb3.web3Provider.selectedAddress,
-                value: parseFloat($("#deposit_amount").val()) * 1e+18
+                from: coinFlipWeb3.web3Provider.selectedAddress
             },
-            function (error, result) {
+            function(error, result) {
                 if (error) {
                     console.log(error);
                 } else {
-                    refreshAccountInformation()
+                    console.log(result);
                 }
             }
         )
     }
-)
+}
 
-$("#button_withdraw").click(
-    function (e) {
-        e.preventDefault();
-        coinFlipWeb3.contractInstance.methods.withdraw(
-            web3.utils.toWei($("#withdraw_amount").val(), 'ether')
+function depositEther() {
+    coinFlipWeb3.contractInstance.methods.deposit().send(
+        {
+            from: coinFlipWeb3.web3Provider.selectedAddress,
+            value: web3.utils.toWei($("#deposit_amount").val(), 'ether')
+        },
+        function (error, result) {
+            if (error) {
+                console.log(error);
+            } else {
+                alert('You have successfully deposited ' + $("#deposit_amount").val() + " ETH! Have fun!");
+                checkBalance();
+            }
+        }
+    )
+}
+
+function withdrawEther() {
+    coinFlipWeb3.contractInstance.methods.withdraw(
+        web3.utils.toWei($("#withdraw_amount").val(), 'ether')
+    ).send(
+        {
+            from: coinFlipWeb3.web3Provider.selectedAddress
+        },
+        function (error, result) {
+            if (error) {
+                console.log();
+            } else {
+                alert('You have successfully withdrawn ' + $("#withdraw_amount").val() + " ETH!");
+                checkBalance();
+            }
+        }
+    )
+}
+
+function transferEther() {
+    const target_account = $("#transfer_target").val()
+    console.log(target_account.substring(0, 2));
+    if (target_account.substring(0, 2) === '0x') {  // Address starts with '0x'
+        coinFlipWeb3.contractInstance.methods.transferToAddress(
+            target_account,
+            web3.utils.toWei($("#transfer_amount").val(), 'ether')
         ).send(
             {
                 from: coinFlipWeb3.web3Provider.selectedAddress
             },
             function (error, result) {
                 if (error) {
-                    console.log();
+                    console.log(error);
                 } else {
-                    refreshAccountInformation();
+                    alert('You have successfully transfer ' + $("#transfer_amount").val() + " ETH to " + target_account + "!");
+                    checkBalance();
+                }
+            }
+        )
+    } else {  // Account ID is not allowed to start with '0x'
+        coinFlipWeb3.contractInstance.methods.transferToID(
+            target_account,
+            web3.utils.toWei($("#transfer_amount").val(), 'ether')
+        ).send(
+            {
+                from: coinFlipWeb3.web3Provider.selectedAddress
+            },
+            function (error, result) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    alert('You have successfully transfer ' + $("#transfer_amount").val() + " ETH to " + target_account + "!");
+                    checkBalance();
                 }
             }
         )
     }
-)
+}
 
-$("#button_transfer").click(
-    function (e) {
-        e.preventDefault();
-        const target_account = $("#transfer_target").val()
-        console.log(target_account.substring(0, 2));
-        if (target_account.substring(0, 2) === '0x') {  // Address starts with '0x'
-            coinFlipWeb3.contractInstance.methods.transferToAddress(
-                target_account,
-                web3.utils.toWei($("#transfer_amount").val(), 'ether')
-            ).send(
-                {
-                    from: coinFlipWeb3.web3Provider.selectedAddress
-                },
-                function (error, result) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        refreshAccountInformation();
-                    }
-                }
-            )
-        } else {  // Account ID is not allowed to start with '0x'
-            coinFlipWeb3.contractInstance.methods.transferToID(
-                target_account,
-                web3.utils.toWei($("#transfer_amount").val(), 'ether')
-            ).send(
-                {
-                    from: coinFlipWeb3.web3Provider.selectedAddress
-                },
-                function (error, result) {
-                    if (error) {
-                        console.log(error);
-                    } else {
-                        refreshAccountInformation();
-                    }
-                }
-            )
-        }
-    }
-)
