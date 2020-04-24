@@ -36,7 +36,6 @@ contract CoinFlip is Account{
      * @param betValue provided by the first player initializing the game
      * @param winner the winner of this round
      * @param submittedClearText the submitted clear text value for each user
-     * @param cheater if there are cheaters, they will be recorded here
      */
     struct Game {
         uint ID;
@@ -45,7 +44,6 @@ contract CoinFlip is Account{
         uint betValue;
         address winner;
         mapping (address => uint) submittedClearText;
-        address[2] cheater;
     }
 
     /// Self-increasing gameID counter
@@ -129,6 +127,8 @@ contract CoinFlip is Account{
      *      and the player can reveal their clear text.
      */
     function submitHash(bytes32 hashValue) external enrolledPlayer {
+        // Require the game has started.
+        require(gameHistory[gameID].status == 2, "The game status is wrong!");
         // Once the player submit the value, he/she cannot modify it.
         require(submittedHashValue[msg.sender] == "", "You have already submitted your result.");
 
@@ -142,13 +142,11 @@ contract CoinFlip is Account{
 
     /**
      * Make sure the submitted hash value and clear text match.
-     * TODO: not only the random number itself should be submitted, we need other nonce.
      */
-    function validate() private returns (uint) {
+    function validate() private view returns (uint) {
         uint cheaterCount = 0;
         for (uint i = 0; i < 2; i++) {
-            if (submittedHashValue[gameHistory[gameID].player[i]] != keccak256(abi.encodePacked(gameHistory[gameID].submittedClearText[gameHistory[gameID].player[i]])) ) {
-                gameHistory[gameID].cheater[cheaterCount] = gameHistory[gameID].player[i];
+            if (submittedHashValue[gameHistory[gameID].player[i]] != keccak256(abi.encodePacked(gameHistory[gameID].submittedClearText[gameHistory[gameID].player[i]]))) {
                 cheaterCount += 1;
             }
         }
@@ -158,7 +156,6 @@ contract CoinFlip is Account{
     /**
      * If one or more players are detected cheating, this round will be invalid.
      * The money will be given back to the players.
-     * TODO: Half of the cheater's balance will be kept by the contract/banker for punishment.
      */
     function detectCheating() private {
         userList[gameHistory[gameID].player[0]].balance += banker.gameDeposit / 2;
@@ -173,13 +170,11 @@ contract CoinFlip is Account{
      * @notice the player who initialize the game will always choose the mod == 0.
      */
     function findWinner() private returns (address) {
-        if (validate() != 0) {
+        if (validate() == 0) {
             uint mod = addmod(gameHistory[gameID].submittedClearText[gameHistory[gameID].player[0]], gameHistory[gameID].submittedClearText[gameHistory[gameID].player[1]], 2);
-            if (mod == 0) {
-                gameHistory[gameID].winner = gameHistory[gameID].player[0];
-            } else {
-                gameHistory[gameID].winner = gameHistory[gameID].player[1];
-            }
+            // Choose the winner
+            gameHistory[gameID].winner = gameHistory[gameID].player[mod];
+            // Transfer balance to the winner
             balanceTransfer();
             houseCleaning();
             return gameHistory[gameID].winner;
@@ -192,11 +187,13 @@ contract CoinFlip is Account{
 
     /**
      * Transfer 95% of the temporary gameDeposit to the winner, 5% to the banker.
+     * @dev To cut down the fee, transfer the balance within the contract, rather than directly to winner's address.
      */
     function balanceTransfer() private {
         banker.balance += banker.gameDeposit / 100 * 5;
         userList[gameHistory[gameID].winner].balance += banker.gameDeposit / 100 * 95;
-        banker.gameDeposit = 0;
+
+        delete banker.gameDeposit;
     }
 
     /**
@@ -205,6 +202,10 @@ contract CoinFlip is Account{
      * @param randomNumber the automatically generated randomNumber for the player.
      */
     function submitClearText(uint randomNumber) external enrolledPlayer {
+        // Submit hash value before submiting clear text.
+        require(submittedHashValue[msg.sender] != "", "You have not submit hash value yet.");
+        // Clear text can only be submitted until all players submit the hash value.
+        require(submitHashCount == 2, "Not all players have submitted the hash value!");
         // Prevent modification.
         require(gameHistory[gameID].submittedClearText[msg.sender] == 0, "You have already submitted your result.");
 
@@ -216,6 +217,9 @@ contract CoinFlip is Account{
         }
     }
 
+    /**
+     * @dev prepare for the JavaScript to check whether all players have submitted the hash value.
+     */
     function bothSubmitHashCheck() external view enrolledPlayer returns (bool){
         return bothSubmitHash;
     }
