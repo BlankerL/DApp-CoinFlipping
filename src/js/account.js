@@ -150,29 +150,29 @@ function transactionCheck() {
                                 if (error) {
                                     console.log(error);
                                 } else {
+                                    console.log(result);
                                     let targetRow = document.getElementById('transaction_history').getElementsByTagName('tbody')[0].insertRow();
                                     // Transaction ID
                                     let targetCell = targetRow.insertCell(0);
                                     targetCell.appendChild(document.createTextNode(result["_id"]));
-                                    // Transaction Time
+                                    // Transaction Type
                                     targetCell = targetRow.insertCell(1);
+                                    targetCell.appendChild(document.createTextNode(result["_type"]))
+                                    // Transaction Time
+                                    targetCell = targetRow.insertCell(2);
                                     let transaction_time = new Date(result["_time"] * 1000)
                                     targetCell.appendChild(document.createTextNode(transaction_time.toLocaleDateString('zh-HK') + ' ' + transaction_time.toLocaleTimeString()));
                                     // From
-                                    targetCell = targetRow.insertCell(2);
+                                    targetCell = targetRow.insertCell(3);
                                     targetCell.appendChild(document.createTextNode(result["_from"]))
                                     // To
-                                    targetCell = targetRow.insertCell(3);
+                                    targetCell = targetRow.insertCell(4);
                                     targetCell.appendChild(document.createTextNode(result["_to"]))
                                     // Amount
-                                    targetCell = targetRow.insertCell(4);
+                                    targetCell = targetRow.insertCell(5);
                                     targetCell.appendChild(document.createTextNode(
                                         web3.utils.fromWei(result["_amount"], 'ether') + ' ETH'
                                     ))
-                                    // Comment
-                                    targetCell = targetRow.insertCell(5);
-                                    targetCell.appendChild(document.createTextNode(result["_comment"]))
-                                    //console.log(result);
                                 }
                             }
                         )

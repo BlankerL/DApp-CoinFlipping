@@ -133,7 +133,7 @@ function submitClearText(clearText) {
     ).send(
         {
             from: coinFlipWeb3.web3Provider.selectedAddress,
-            gas: 200000
+            gas: 2000000
         },
         function (error, result) {
             if (error) {
