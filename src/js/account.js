@@ -124,3 +124,61 @@ function transferEther() {
     }
 }
 
+function transactionCheck() {
+    coinFlipWeb3.contractInstance.methods.userTransactionArrayCheck().call(
+        {
+            from: coinFlipWeb3.web3Provider.selectedAddress
+        },
+        function (error, result) {
+            if (error) {
+                console.log(error);
+            } else {
+                if (result.length === 0) {
+                    document.getElementById('transaction_history').innerText = "You are a new player! No history for you!"
+                } else {
+                    result.reverse();
+                    // TODO: Only return result within 1 day.
+                    result.forEach(addTransactionHistory);
+                    function addTransactionHistory(transactionID) {
+                        coinFlipWeb3.contractInstance.methods.transactionCheck(
+                            parseInt(transactionID)
+                        ).call(
+                            {
+                                from: coinFlipWeb3.web3Provider.selectedAddress
+                            },
+                            function (error, result) {
+                                if (error) {
+                                    console.log(error);
+                                } else {
+                                    let targetRow = document.getElementById('transaction_history').getElementsByTagName('tbody')[0].insertRow();
+                                    // Transaction ID
+                                    let targetCell = targetRow.insertCell(0);
+                                    targetCell.appendChild(document.createTextNode(result["_id"]));
+                                    // Transaction Time
+                                    targetCell = targetRow.insertCell(1);
+                                    let transaction_time = new Date(result["_time"] * 1000)
+                                    targetCell.appendChild(document.createTextNode(transaction_time.toLocaleDateString('zh-HK') + ' ' + transaction_time.toLocaleTimeString()));
+                                    // From
+                                    targetCell = targetRow.insertCell(2);
+                                    targetCell.appendChild(document.createTextNode(result["_from"]))
+                                    // To
+                                    targetCell = targetRow.insertCell(3);
+                                    targetCell.appendChild(document.createTextNode(result["_to"]))
+                                    // Amount
+                                    targetCell = targetRow.insertCell(4);
+                                    targetCell.appendChild(document.createTextNode(
+                                        web3.utils.fromWei(result["_amount"], 'ether') + ' ETH'
+                                    ))
+                                    // Comment
+                                    targetCell = targetRow.insertCell(5);
+                                    targetCell.appendChild(document.createTextNode(result["_comment"]))
+                                    //console.log(result);
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    )
+}
