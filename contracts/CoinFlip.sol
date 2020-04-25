@@ -1,7 +1,6 @@
 pragma solidity >=0.4.21 <0.7.0;
 
 // TODO: Reconstruct the gameHistory, maybe I can make it an array
-// TODO: Check how the balance is changed, currently something must be wrong.
 
 import "./Bankers.sol";
 

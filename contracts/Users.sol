@@ -38,7 +38,7 @@ contract Users {
         string _type;
     }
 
-    /// Counter of the transaction ID
+    /// Initiate the counter of the transaction ID
     uint transactionIDCounter = 1;
 
     /**
