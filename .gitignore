@@ -1,5 +1,8 @@
+# IDE Related
+/.idea/
+
 # macOS system file
-/.DS_Store/
+.DS_Store
 
 # Project folder
 /build/
