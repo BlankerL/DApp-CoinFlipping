@@ -1,7 +1,5 @@
 pragma solidity >=0.4.21 <0.7.0;
 
-// TODO: Reconstruct the gameHistory, maybe I can make it an array
-
 import "./Bankers.sol";
 
 contract CoinFlip is Bankers {
@@ -55,17 +53,18 @@ contract CoinFlip is Bankers {
     function initializeGame(uint betValue) external {
         require(gameHistory[gameID].status == 0, "There is a game waiting for player, you cannot start a new game now!");
         require(userList[msg.sender].balance >= betValue, "You do not have sufficient balance.");
+        // Initialize the game
         Game storage game = gameHistory[gameID];
         game.ID = gameID;
         game.player[0] = msg.sender;
         game.betValue = betValue;
-
+        // Deduct the balance from the user's balance, move to banker's temperory balance (gameDeposit)
         userList[msg.sender].balance -= betValue;
-        addTransaction(userList[msg.sender].accountID, "banker", betValue, "Bet");
-
         banker.gameDeposit += betValue;
-
-        gameHistory[gameID].status = 1;
+        // Append transaction record
+        addTransaction(userList[msg.sender].accountID, "banker", betValue, "Bet");
+        // Set the game status to 1
+        game.status = 1;
     }
 
     /**
@@ -73,19 +72,24 @@ contract CoinFlip is Bankers {
      * Once the new player join the game, the betValue will be deducted and transfer to the banker.
      */
     function joinGame() external {
-        require(gameHistory[gameID].status == 1, "There is no game waiting for player, please initiate a game!");
-        require(userList[msg.sender].balance >= gameHistory[gameID].betValue, "You do not have sufficient balance.");
+        // Initialize temporary instance for easier manipulation and less gas cost.
+        Game storage game = gameHistory[gameID];
+        User storage user = userList[msg.sender];
+
+        require(game.status == 1, "There is no game waiting for player, please initiate a game!");
+        require(user.balance >= game.betValue, "You do not have sufficient balance.");
         // The player initialize the game cannot join it twice.
-        require(gameHistory[gameID].player[0] != msg.sender, "You are already in this game!");
+        require(game.player[0] != msg.sender, "You are already in this game!");
 
-        gameHistory[gameID].player[1] = msg.sender;
-
-        userList[msg.sender].balance -= gameHistory[gameID].betValue;
-        addTransaction(userList[msg.sender].accountID, "banker", gameHistory[gameID].betValue, "Bet");
-
-        banker.gameDeposit += gameHistory[gameID].betValue;
-
-        gameHistory[gameID].status = 2;
+        // Set the counterparty as the people join the game.
+        game.player[1] = msg.sender;
+        // Deduct the balance from the user's balance, move to banker's temperory balance (gameDeposit)
+        user.balance -= game.betValue;
+        banker.gameDeposit += game.betValue;
+        // Append transaction record
+        addTransaction(user.accountID, "banker", game.betValue, "Bet");
+        // Once the player list is full, change game status to 2.
+        game.status = 2;
     }
 
     /**
@@ -137,12 +141,16 @@ contract CoinFlip is Bankers {
      * Make sure the submitted hash value and clear text match.
      */
     function validate() private view returns (uint) {
+        // Initialize temporary instance for easier manipulation and less gas cost.
+        Game storage game = gameHistory[gameID];
+
         uint cheaterCount = 0;
         for (uint i = 0; i < 2; i++) {
-            if (submittedHashValue[gameHistory[gameID].player[i]] != keccak256(abi.encodePacked(gameHistory[gameID].submittedClearText[gameHistory[gameID].player[i]]))) {
+            if (submittedHashValue[game.player[i]] != keccak256(abi.encodePacked(game.submittedClearText[game.player[i]]))) {
                 cheaterCount += 1;
             }
         }
+
         return cheaterCount;
     }
 
@@ -151,11 +159,15 @@ contract CoinFlip is Bankers {
      * The money will be given back to the players.
      */
     function detectCheating() private {
-        userList[gameHistory[gameID].player[0]].balance += banker.gameDeposit / 2;
-        userList[gameHistory[gameID].player[1]].balance += banker.gameDeposit / 2;
+        // Initialize temporary instance for easier manipulation and less gas cost
+        Game storage game = gameHistory[gameID];
 
-        addTransaction("banker", userList[gameHistory[gameID].player[0]].accountID, banker.gameDeposit / 2, "Refund");
-        addTransaction("banker", userList[gameHistory[gameID].player[1]].accountID, banker.gameDeposit / 2, "Refund");
+        // Give the money back to two participants
+        userList[game.player[0]].balance += banker.gameDeposit / 2;
+        userList[game.player[1]].balance += banker.gameDeposit / 2;
+        // Append transaction records
+        addTransaction("banker", userList[game.player[0]].accountID, banker.gameDeposit / 2, "Refund");
+        addTransaction("banker", userList[game.player[1]].accountID, banker.gameDeposit / 2, "Refund");
 
         delete banker.gameDeposit;
     }
@@ -166,14 +178,17 @@ contract CoinFlip is Bankers {
      * @notice the player who initialize the game will always choose the mod == 0.
      */
     function findWinner() private returns (address) {
+        // Initialize temporary instance for easier manipulation and less gas cost
+        Game storage game = gameHistory[gameID];
+
         if (validate() == 0) {
-            uint mod = addmod(gameHistory[gameID].submittedClearText[gameHistory[gameID].player[0]], gameHistory[gameID].submittedClearText[gameHistory[gameID].player[1]], 2);
+            uint mod = addmod(game.submittedClearText[game.player[0]], game.submittedClearText[game.player[1]], 2);
             // Choose the winner
-            gameHistory[gameID].winner = gameHistory[gameID].player[mod];
+            game.winner = game.player[mod];
             // Transfer balance to the winner
             balanceTransfer();
             houseCleaning();
-            return gameHistory[gameID].winner;
+            return game.winner;
         } else {
             detectCheating();
             houseCleaning();
@@ -186,12 +201,16 @@ contract CoinFlip is Bankers {
      * @dev To cut down the fee, transfer the balance within the contract, rather than directly to winner's address.
      */
     function balanceTransfer() private {
+        // Initialize temporary instance for easier manipulation and less gas cost
+        Game storage game = gameHistory[gameID];
+
+        // Banker take 5% as the commission, and the winner take the rest
         banker.balance += banker.gameDeposit / 100 * 5;
-        userList[gameHistory[gameID].winner].balance += banker.gameDeposit / 100 * 95;
-
+        userList[game.winner].balance += banker.gameDeposit / 100 * 95;
+        // Append transaction records
         addTransaction("banker", "banker", banker.gameDeposit / 100 * 5, "Commission");
-        addTransaction("banker", userList[gameHistory[gameID].winner].accountID, banker.gameDeposit / 100 * 95, "Reward");
-
+        addTransaction("banker", userList[game.winner].accountID, banker.gameDeposit / 100 * 95, "Reward");
+        // Clear the gameDeposit for the banker
         delete banker.gameDeposit;
     }
 
@@ -201,16 +220,21 @@ contract CoinFlip is Bankers {
      * @param randomNumber the automatically generated randomNumber for the player.
      */
     function submitClearText(uint randomNumber) external enrolledPlayer {
+        // Initialize temporary instance for easier manipulation and less gas cost
+        Game storage game = gameHistory[gameID];
+
         // Submit hash value before submiting clear text.
         require(submittedHashValue[msg.sender] != "", "You have not submit hash value yet.");
         // Clear text can only be submitted until all players submit the hash value.
         require(submitHashCount == 2, "Not all players have submitted the hash value!");
         // Prevent modification.
-        require(gameHistory[gameID].submittedClearText[msg.sender] == 0, "You have already submitted your result.");
+        require(game.submittedClearText[msg.sender] == 0, "You have already submitted your result.");
 
-        gameHistory[gameID].submittedClearText[msg.sender] = randomNumber;
+        // Record the clear text into the game history
+        game.submittedClearText[msg.sender] = randomNumber;
         submitClearTextCount += 1;
 
+        // If all players submitted their clear text, find the winner automatically.
         if (submitClearTextCount == 2) {
             findWinner();
         }
@@ -230,38 +254,43 @@ contract CoinFlip is Bankers {
      * @return your_index of the msg.sender
      */
     function lastGameHistory() external view returns (uint game_id, uint bet_value, uint total_player, uint your_index) {
+        // Initialize temporary instance for easier manipulation and less gas cost
+        Game storage game = gameHistory[userList[msg.sender].lastGameID];
+
+        // Find the index of the user
         uint userIndex = 0;
         for (uint i = 0; i < 2; i++) {
-            if (msg.sender == gameHistory[userList[msg.sender].lastGameID].player[i]) {
+            if (msg.sender == game.player[i]) {
                 userIndex = i;
                 break;
             }
         }
-        return (
-        gameHistory[userList[msg.sender].lastGameID].ID,
-        gameHistory[userList[msg.sender].lastGameID].betValue,
-        gameHistory[userList[msg.sender].lastGameID].player.length,
-        userIndex
-        );
+        return (game.ID, game.betValue, game.player.length, userIndex);
     }
 
     /**
      * House cleaning process to release resources and prepare for the next round.
      */
     function houseCleaning() private {
-        gameHistory[gameID].status = 3;
+        // Initialize temporary instance for easier manipulation and less gas cost
+        Game storage game = gameHistory[gameID];
 
-        userList[gameHistory[gameID].player[0]].lastGameID = gameID;
-        userList[gameHistory[gameID].player[1]].lastGameID = gameID;
+        // Update the game status to 3
+        game.status = 3;
+        // Change the lastGameID of the user to this game (user can only see the history of past game)
+        userList[game.player[0]].lastGameID = gameID;
+        userList[game.player[1]].lastGameID = gameID;
 
+        // Delete the value stored in the parameter
         delete bothSubmitHash;
         delete submitHashCount;
         delete submitClearTextCount;
 
         // Clear submitted hash value
-        delete submittedHashValue[gameHistory[gameID].player[0]];
-        delete submittedHashValue[gameHistory[gameID].player[1]];
+        delete submittedHashValue[game.player[0]];
+        delete submittedHashValue[game.player[1]];
 
+        // gameID increase by 1, prepare for the next game
         gameID += 1;
     }
 }

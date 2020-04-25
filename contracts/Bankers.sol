@@ -1,7 +1,5 @@
 pragma solidity >=0.4.21 <0.7.0;
 
-// TODO: Reconstruct the gameHistory, maybe I can make it an array
-
 import "./Users.sol";
 
 contract Bankers is Users {

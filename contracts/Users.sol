@@ -6,7 +6,7 @@ contract Users {
      * @param bindAddress User's external Ethereum address bind to this account
      * @param accountID User's registration account ID
      * @param balance Balance in the account for this user
-     * @param inGame Whether the player is in the game or not
+     * @param inGame Whether the player is in the game or not TODO: If he/she is in game, he cannot participate in another game
      * @param lastGameID The last game this user participate in
      * @param transactionRecord The transaction record of this user
      * @notice The balance is not the ETH in user's actual Ethereum address, but his/her remaining in this contract.
@@ -117,7 +117,8 @@ contract Users {
     }
 
     /**
-     * @param accountToRegister The account ID the user would like to use.
+     * User registration
+     * @param accountToRegister accountID the user would like to register
      */
     function createAccount(string memory accountToRegister) public notRegistered(accountToRegister) {
         // Add the accountToRegister => msg.sender to mapping
@@ -128,64 +129,83 @@ contract Users {
         user.bindAddress = msg.sender;
     }
 
+    /**
+     * Check if the user have registered or not, if yes, return the accountID
+     */
     function checkRegistration() external view returns (string memory) {
-        if (bytes(userList[msg.sender].accountID).length != 0) {
-            return userList[msg.sender].accountID;
+        // Initialize temporary instance for easier manipulation and less gas cost
+        User storage user = userList[msg.sender];
+        if (bytes(user.accountID).length != 0) {
+            return user.accountID;
         }
-        return userList[msg.sender].accountID;
+
+        return user.accountID;
     }
 
     /**
-     * User deposit the money to the contract, and the contract will give him a "virtual" balance, similar to deposit fiat money to bank.
+     * User deposit the money to the contract, and the contract will give him a "virtual" balance,
+     * similar to deposit fiat money to bank
      */
     function deposit() external payable registered{
         userList[msg.sender].balance += msg.value;
+        // Append transaction record
         addTransaction("External Wallet", userList[msg.sender].accountID, msg.value, "Deposit");
     }
 
     /**
-     * User transfer his/her deposit to another registered user with the address.
-     * @param toAddress The address of the target registered user to transfer balance to.
-     * @param amount The amount of balance to transfer to the target registered user.
+     * User transfer his/her deposit to another registered user with the address
+     * @param toAddress The address of the target registered user to transfer balance to
+     * @param amount The amount of balance to transfer to the target registered user
      */
     function transferToAddress(address toAddress, uint amount) external registered enoughBalance(amount) {
+        // Initialize temporary instance for easier manipulation and less gas cost
+        User storage fromUser = userList[msg.sender];
+        User storage targetUser = userList[toAddress];
         // The target should also be a registered account as well
         require (
-            bytes(userList[toAddress].accountID).length != 0,
+            bytes(targetUser.accountID).length != 0,
             "The target address have not registered yet! Please check again."
         );
-        userList[msg.sender].balance -= amount;
-        userList[toAddress].balance += amount;
-
-        addTransaction(userList[msg.sender].accountID, userList[toAddress].accountID, amount, "Transfer");
+        // Manipulate the balance
+        fromUser.balance -= amount;
+        targetUser.balance += amount;
+        // Append transaction record
+        addTransaction(fromUser.accountID, targetUser.accountID, amount, "Transfer");
     }
 
     /**
-     * User transfer his/her deposit to another registered user with the accountID.
-     * @param  toAccountID The accountID of the target registered user to transfer balance to.
-     * @param amount The amount of balance to transfer to the target registered user.
+     * User transfer his/her deposit to another registered user with the accountID
+     * @param  toAccountID The accountID of the target registered user to transfer balance to
+     * @param amount The amount of balance to transfer to the target registered user
      */
     function transferToID(string memory toAccountID, uint amount) public registered enoughBalance(amount) {
+        // Initialize temporary instance for easier manipulation and less gas cost
+        User storage fromUser = userList[msg.sender];
+        User storage targetUser = userList[accountToAddress[toAccountID]];
         // The target should also be a registered account as well
         require (
-            bytes(userList[accountToAddress[toAccountID]].accountID).length != 0,
+            bytes(targetUser.accountID).length != 0,
             "The target address have not registered yet! Please check again."
         );
-        userList[msg.sender].balance -= amount;
-        userList[accountToAddress[toAccountID]].balance += amount;
-
-        addTransaction(userList[msg.sender].accountID, toAccountID, amount, "Transfer");
+        // Manipulate the balance
+        fromUser.balance -= amount;
+        targetUser.balance += amount;
+        // Append transaction record
+        addTransaction(fromUser.accountID, toAccountID, amount, "Transfer");
     }
 
     /**
-     * Withdraw the balance from the contract, get the token back to his/her ethureum address.
+     * Withdraw the balance from the contract, get the token back to his/her ethureum address
      * @param amount The amount of balance to withdraw.
      */
     function withdraw(uint amount) external payable registered enoughBalance(amount) {
-        userList[msg.sender].balance -= amount;
+        // Initialize temporary instance for easier manipulation and less gas cost
+        User storage user = userList[msg.sender];
+        // Manipulate the balance
+        user.balance -= amount;
         msg.sender.transfer(amount);
-
-        addTransaction(userList[msg.sender].accountID, "External Wallet", amount, "Withdraw");
+        // Append transaction record
+        addTransaction(user.accountID, "External Wallet", amount, "Withdraw");
     }
 
     /**
