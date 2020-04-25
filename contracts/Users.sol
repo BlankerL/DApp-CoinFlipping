@@ -112,7 +112,7 @@ contract Users {
      * Guarantee the msg.sender has enough balance to do the balance-related activity.
      */
     modifier enoughBalance(uint amount) {
-        require (userList[msg.sender].balance > amount, "You do not have enough balance!");
+        require (userList[msg.sender].balance >= amount, "You do not have enough balance!");
         _;
     }
 
