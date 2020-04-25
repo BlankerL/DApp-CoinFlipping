@@ -3,6 +3,13 @@ pragma solidity >=0.4.21 <0.7.0;
 contract Account {
     /**
      * User's information
+     * @param bindAddress User's external Ethereum address bind to this account
+     * @param accountID User's registration account ID
+     * @param balance Balance in the account for this user
+     * @param inGame Whether the player is in the game or not
+     * @param lastGameID The last game this user participate in
+     * @param transactionRecord The transaction record of this user
+     * @notice The balance is not the ETH in user's actual Ethereum address, but his/her remaining in this contract.
      */
     struct User {
         address bindAddress;
@@ -10,8 +17,68 @@ contract Account {
         uint balance;
         bool inGame;
         uint lastGameID;
+        uint[] transactionRecord;
     }
 
+    /**
+     * Transaction detail
+     * @param _transactionID ID of the transaction
+     * @param _time The time of the transaction
+     * @param _from Where the amount of ETH is transferred from
+     * @param _to Where the amount of ETH is transferred to
+     * @param _amount the The amount of ETH being transferred
+     * @param _comment The characteristic of this transaction, e.g., Deposit, Withdraw, Transfer, Bet, Reward, etc.
+     */
+    struct Transaction {
+        uint _transactionID;
+        uint _time;
+        string _from;
+        string _to;
+        uint _amount;
+        string _comment;
+    }
+
+    /// Counter of the transaction ID
+    uint transactionIDCounter = 1;
+
+    /**
+     * @param _from Where the amount of ETH is transferred from
+     * @param _to Where the amount of ETH is transferred to
+     * @param _amount The amount of ETH being transferred
+     * @param _comment The characteristic of this transaction, e.g., Deposit, Withdraw, Transfer, Bet, Reward, etc.
+     */
+    function addTransaction(string memory _from, string memory _to, uint _amount, string memory _comment) private {
+        Transaction storage transaction = transactionHistory[transactionIDCounter];
+        transaction._transactionID = transactionIDCounter;
+        transaction._time = now;
+        transaction._from = _from;
+        transaction._to = _to;
+        transaction._amount = _amount;
+        transaction._comment = _comment;
+
+        userList[accountToAddress[_from]].transactionRecord.push(transactionIDCounter);
+        userList[accountToAddress[_to]].transactionRecord.push(transactionIDCounter);
+
+        transactionIDCounter += 1;
+    }
+
+    /**
+     * @param targetTransactionID The transaction to reveal the details
+     */
+    function transactionCheck(uint targetTransactionID) external view returns (uint, uint, string memory, string memory, uint, string memory) {
+        Transaction memory transaction = transactionHistory[targetTransactionID];
+        return (transaction._transactionID, transaction._time, transaction._from, transaction._to, transaction._amount, transaction._comment);
+    }
+
+    /**
+     * The user's transaction history
+     */
+    function userTransactionArrayCheck() external view returns (uint[] memory) {
+        return userList[msg.sender].transactionRecord;
+    }
+
+    /// Mapping from transactionID to transaction's detail.
+    mapping (uint => Transaction) transactionHistory;
     /// Mapping from accountID to address.
     mapping(string => address) internal accountToAddress;
     /// Mapping from address to user's information.
@@ -72,6 +139,7 @@ contract Account {
      */
     function deposit() external payable registered{
         userList[msg.sender].balance += msg.value;
+        addTransaction("External Wallet", userList[msg.sender].accountID, msg.value, "Deposit");
     }
 
     /**
@@ -87,6 +155,8 @@ contract Account {
         );
         userList[msg.sender].balance -= amount;
         userList[toAddress].balance += amount;
+
+        addTransaction(userList[msg.sender].accountID, userList[toAddress].accountID, amount, "Transfer");
     }
 
     /**
@@ -102,6 +172,8 @@ contract Account {
         );
         userList[msg.sender].balance -= amount;
         userList[accountToAddress[toAccountID]].balance += amount;
+
+        addTransaction(userList[msg.sender].accountID, toAccountID, amount, "Transfer");
     }
 
     /**
@@ -111,6 +183,8 @@ contract Account {
     function withdraw(uint amount) external payable registered enoughBalance(amount) {
         userList[msg.sender].balance -= amount;
         msg.sender.transfer(amount);
+
+        addTransaction(userList[msg.sender].accountID, "External Wallet", amount, "Withdraw");
     }
 
     /**
