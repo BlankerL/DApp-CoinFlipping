@@ -1,6 +1,6 @@
 pragma solidity >=0.4.21 <0.7.0;
 
-contract Account {
+contract Users {
     /**
      * User's information
      * @param bindAddress User's external Ethereum address bind to this account
