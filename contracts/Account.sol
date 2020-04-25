@@ -27,7 +27,7 @@ contract Account {
      * @param _from Where the amount of ETH is transferred from
      * @param _to Where the amount of ETH is transferred to
      * @param _amount the The amount of ETH being transferred
-     * @param _comment The characteristic of this transaction, e.g., Deposit, Withdraw, Transfer, Bet, Reward, etc.
+     * @param _type The characteristic of this transaction, e.g., Deposit, Withdraw, Transfer, Bet, Reward, etc.
      */
     struct Transaction {
         uint _transactionID;
@@ -35,7 +35,7 @@ contract Account {
         string _from;
         string _to;
         uint _amount;
-        string _comment;
+        string _type;
     }
 
     /// Counter of the transaction ID
@@ -45,16 +45,17 @@ contract Account {
      * @param _from Where the amount of ETH is transferred from
      * @param _to Where the amount of ETH is transferred to
      * @param _amount The amount of ETH being transferred
-     * @param _comment The characteristic of this transaction, e.g., Deposit, Withdraw, Transfer, Bet, Reward, etc.
+     * @param _type The characteristic of this transaction, e.g., Deposit, Withdraw, Transfer, Bet, Reward, etc.
+     * @dev Make the function `internal`, so it will be available in the subcontract(s).
      */
-    function addTransaction(string memory _from, string memory _to, uint _amount, string memory _comment) private {
+    function addTransaction(string memory _from, string memory _to, uint _amount, string memory _type) internal {
         Transaction storage transaction = transactionHistory[transactionIDCounter];
         transaction._transactionID = transactionIDCounter;
         transaction._time = now;
         transaction._from = _from;
         transaction._to = _to;
         transaction._amount = _amount;
-        transaction._comment = _comment;
+        transaction._type = _type;
 
         userList[accountToAddress[_from]].transactionRecord.push(transactionIDCounter);
         userList[accountToAddress[_to]].transactionRecord.push(transactionIDCounter);
@@ -65,9 +66,9 @@ contract Account {
     /**
      * @param targetTransactionID The transaction to reveal the details
      */
-    function transactionCheck(uint targetTransactionID) external view returns (uint _id, uint _time, string memory _from, string memory _to, uint _amount, string memory _comment) {
+    function transactionCheck(uint targetTransactionID) external view returns (uint _id, string memory _type, uint _time, string memory _from, string memory _to, uint _amount) {
         Transaction memory transaction = transactionHistory[targetTransactionID];
-        return (transaction._transactionID, transaction._time, transaction._from, transaction._to, transaction._amount, transaction._comment);
+        return (transaction._transactionID, transaction._type, transaction._time, transaction._from, transaction._to, transaction._amount);
     }
 
     /**

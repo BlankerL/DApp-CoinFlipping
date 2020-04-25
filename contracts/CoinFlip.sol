@@ -1,5 +1,8 @@
 pragma solidity >=0.4.21 <0.7.0;
 
+// TODO: Reconstruct the gameHistory, maybe I can make it an array
+// TODO: Check how the balance is changed, currently something must be wrong.
+
 import "./Account.sol";
 
 contract CoinFlip is Account{
@@ -72,6 +75,8 @@ contract CoinFlip is Account{
         game.betValue = betValue;
 
         userList[msg.sender].balance -= betValue;
+        addTransaction(userList[msg.sender].accountID, "banker", betValue, "Bet");
+
         banker.gameDeposit += betValue;
 
         gameHistory[gameID].status = 1;
@@ -90,6 +95,8 @@ contract CoinFlip is Account{
         gameHistory[gameID].player[1] = msg.sender;
 
         userList[msg.sender].balance -= gameHistory[gameID].betValue;
+        addTransaction(userList[msg.sender].accountID, "banker", gameHistory[gameID].betValue, "Bet");
+
         banker.gameDeposit += gameHistory[gameID].betValue;
 
         gameHistory[gameID].status = 2;
@@ -161,6 +168,9 @@ contract CoinFlip is Account{
         userList[gameHistory[gameID].player[0]].balance += banker.gameDeposit / 2;
         userList[gameHistory[gameID].player[1]].balance += banker.gameDeposit / 2;
 
+        addTransaction("banker", userList[gameHistory[gameID].player[0]].accountID, banker.gameDeposit / 2, "Refund");
+        addTransaction("banker", userList[gameHistory[gameID].player[1]].accountID, banker.gameDeposit / 2, "Refund");
+
         delete banker.gameDeposit;
     }
 
@@ -192,6 +202,9 @@ contract CoinFlip is Account{
     function balanceTransfer() private {
         banker.balance += banker.gameDeposit / 100 * 5;
         userList[gameHistory[gameID].winner].balance += banker.gameDeposit / 100 * 95;
+
+        addTransaction("banker", "banker", banker.gameDeposit / 100 * 5, "Commission");
+        addTransaction("banker", userList[gameHistory[gameID].winner].accountID, banker.gameDeposit / 100 * 95, "Reward");
 
         delete banker.gameDeposit;
     }
