@@ -154,11 +154,11 @@ function lastGameHistory() {
             if (error) {
                 console.log(error);
             } else {
-                if (result[0] !== 0) {
-                    document.getElementById('last_game_id').innerText = result[0];
-                    document.getElementById('last_game_bet_value').innerText = web3.utils.fromWei(result[1], 'ether') + ' ETH';
-                    document.getElementById('last_game_total_player').innerText = result[2];
-                    document.getElementById('last_game_your_index').innerText = parseInt(result[3]) + 1;
+                if (result["game_id"] !== "0") {
+                    document.getElementById('last_game_id').innerText = result["game_id"];
+                    document.getElementById('last_game_bet_value').innerText = web3.utils.fromWei(result["bet_value"], 'ether') + ' ETH';
+                    document.getElementById('last_game_total_player').innerText = result["total_player"];
+                    document.getElementById('last_game_your_index').innerText = parseInt(result["your_index"]) + 1;
                 } else {
                     document.getElementById('game_history').innerText = "You are a new player! No history for you!"
                 }
