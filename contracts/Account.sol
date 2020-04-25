@@ -65,7 +65,7 @@ contract Account {
     /**
      * @param targetTransactionID The transaction to reveal the details
      */
-    function transactionCheck(uint targetTransactionID) external view returns (uint, uint, string memory, string memory, uint, string memory) {
+    function transactionCheck(uint targetTransactionID) external view returns (uint _id, uint _time, string memory _from, string memory _to, uint _amount, string memory _comment) {
         Transaction memory transaction = transactionHistory[targetTransactionID];
         return (transaction._transactionID, transaction._time, transaction._from, transaction._to, transaction._amount, transaction._comment);
     }
