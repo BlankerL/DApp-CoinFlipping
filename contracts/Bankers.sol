@@ -17,7 +17,7 @@ contract Bankers is Users {
         uint gameDeposit;
     }
 
-    Banker private banker;
+    Banker internal banker;
 
     constructor() public {
         banker = Banker({
