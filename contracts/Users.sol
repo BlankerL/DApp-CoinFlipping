@@ -6,7 +6,6 @@ contract Users {
      * @param bindAddress User's external Ethereum address bind to this account
      * @param accountID User's registration account ID
      * @param balance Balance in the account for this user
-     * @param inGame Whether the player is in the game or not TODO: If he/she is in game, he cannot participate in another game
      * @param lastGameID The last game this user participate in
      * @param transactionRecord The transaction record of this user
      * @notice The balance is not the ETH in user's actual Ethereum address, but his/her remaining in this contract.
@@ -15,7 +14,6 @@ contract Users {
         address bindAddress;
         string accountID;
         uint balance;
-        bool inGame;
         uint lastGameID;
         uint[] transactionRecord;
     }
