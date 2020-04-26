@@ -138,7 +138,7 @@ function transactionCheck() {
                 } else {
                     result.reverse();
                     // TODO: Only return result within 1 day.
-                    result.forEach(addTransactionHistory);
+                    result.some(addTransactionHistory);
                     function addTransactionHistory(transactionID) {
                         coinFlipWeb3.contractInstance.methods.transactionCheck(
                             parseInt(transactionID)
@@ -150,29 +150,33 @@ function transactionCheck() {
                                 if (error) {
                                     console.log(error);
                                 } else {
-                                    console.log(result);
-                                    let targetRow = document.getElementById('transaction_history').getElementsByTagName('tbody')[0].insertRow();
-                                    // Transaction ID
-                                    let targetCell = targetRow.insertCell(0);
-                                    targetCell.appendChild(document.createTextNode(result["_id"]));
-                                    // Transaction Type
-                                    targetCell = targetRow.insertCell(1);
-                                    targetCell.appendChild(document.createTextNode(result["_type"]))
-                                    // Transaction Time
-                                    targetCell = targetRow.insertCell(2);
-                                    let transaction_time = new Date(result["_time"] * 1000)
-                                    targetCell.appendChild(document.createTextNode(transaction_time.toLocaleDateString('zh-HK') + ' ' + transaction_time.toLocaleTimeString()));
-                                    // From
-                                    targetCell = targetRow.insertCell(3);
-                                    targetCell.appendChild(document.createTextNode(result["_from"]))
-                                    // To
-                                    targetCell = targetRow.insertCell(4);
-                                    targetCell.appendChild(document.createTextNode(result["_to"]))
-                                    // Amount
-                                    targetCell = targetRow.insertCell(5);
-                                    targetCell.appendChild(document.createTextNode(
-                                        web3.utils.fromWei(result["_amount"], 'ether') + ' ETH'
-                                    ))
+                                    // Only loop for transaction happens within 24 hours
+                                    if (Math.floor(Date.now() / 1000) - result["_time"] <= 86400) {
+                                        let targetRow = document.getElementById('transaction_history').getElementsByTagName('tbody')[0].insertRow();
+                                        // Transaction ID
+                                        let targetCell = targetRow.insertCell(0);
+                                        targetCell.appendChild(document.createTextNode(result["_id"]));
+                                        // Transaction Type
+                                        targetCell = targetRow.insertCell(1);
+                                        targetCell.appendChild(document.createTextNode(result["_type"]))
+                                        // Transaction Time
+                                        targetCell = targetRow.insertCell(2);
+                                        let transaction_time = new Date(result["_time"] * 1000)
+                                        targetCell.appendChild(document.createTextNode(transaction_time.toLocaleDateString('zh-HK') + ' ' + transaction_time.toLocaleTimeString()));
+                                        // From
+                                        targetCell = targetRow.insertCell(3);
+                                        targetCell.appendChild(document.createTextNode(result["_from"]))
+                                        // To
+                                        targetCell = targetRow.insertCell(4);
+                                        targetCell.appendChild(document.createTextNode(result["_to"]))
+                                        // Amount
+                                        targetCell = targetRow.insertCell(5);
+                                        targetCell.appendChild(document.createTextNode(
+                                            web3.utils.fromWei(result["_amount"], 'ether') + ' ETH'
+                                        ))
+                                    } else {  // if the time exceed, return and stop the loop
+                                        return true;
+                                    }
                                 }
                             }
                         )

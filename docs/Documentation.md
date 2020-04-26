@@ -79,7 +79,7 @@ struct Transaction {
 
 Once the user deposit, withdraw, transfer, receive transaction, bet in a game, win the game, a `Transaction` instance will be initialized and the `transactionID` will be appended to user's `transactionRecord`. Therefore, the user can check all the transaction records of him. 
 
-As required, the user can see its transaction records within a day, so a limitation is appended on the `transactionCheck()` function to check the time. Also, a criterion is implemented in the JavaScript to prevent the user request the outdated transaction records. 
+As required, the user can see its transaction records within 1 day, so a `require()` is appended on the `transactionCheck()` function to check the time. Also, a criterion is implemented in the JavaScript to prevent the user request the outdated transaction records.
 
 #### Dealer (Banker)
 

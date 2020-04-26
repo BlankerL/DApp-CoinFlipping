@@ -62,10 +62,13 @@ contract Users {
     }
 
     /**
+     * Reveal the transactions within 1 day
      * @param targetTransactionID The transaction to reveal the details
      */
     function transactionCheck(uint targetTransactionID) external view returns (uint _id, string memory _type, uint _time, string memory _from, string memory _to, uint _amount) {
         Transaction memory transaction = transactionHistory[targetTransactionID];
+        require(now - transaction._time <= 1 days, "You can only see transaction details within 1 day!");
+
         return (transaction._transactionID, transaction._type, transaction._time, transaction._from, transaction._to, transaction._amount);
     }
 
