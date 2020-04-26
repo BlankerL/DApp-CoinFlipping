@@ -111,7 +111,14 @@ function flipCoin() {
 
 function submitHash(clearText) {
     coinFlipWeb3.contractInstance.methods.submitHash(
-        web3.utils.sha3("0x" + web3.utils.leftPad(web3.utils.numberToHex(clearText).substring(2,), 64, 0))
+        web3.utils.sha3(
+            "0x" +
+            coinFlipWeb3.web3Provider.selectedAddress.substring(2,) +
+            web3.utils.leftPad(
+                web3.utils.numberToHex(clearText).substring(2,),
+                64, 0
+            )
+        )
     ).send(
         {
             from: coinFlipWeb3.web3Provider.selectedAddress

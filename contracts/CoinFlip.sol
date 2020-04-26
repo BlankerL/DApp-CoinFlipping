@@ -139,6 +139,7 @@ contract CoinFlip is Bankers {
 
     /**
      * Make sure the submitted hash value and clear text match.
+     * @dev Hash value is the user's
      */
     function validate() private view returns (uint) {
         // Initialize temporary instance for easier manipulation and less gas cost.
@@ -146,7 +147,7 @@ contract CoinFlip is Bankers {
 
         uint cheaterCount = 0;
         for (uint i = 0; i < 2; i++) {
-            if (submittedHashValue[game.player[i]] != keccak256(abi.encodePacked(game.submittedClearText[game.player[i]]))) {
+            if (submittedHashValue[game.player[i]] != keccak256(abi.encodePacked(game.player[i], game.submittedClearText[game.player[i]]))) {
                 cheaterCount += 1;
             }
         }
