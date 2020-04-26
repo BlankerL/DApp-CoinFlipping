@@ -6,11 +6,15 @@ Jiabao LIN, 3035673521
 
 As mentioned in the requirements, we need to design a platform that people could register as a user, deposit/withdraw ETH to/from this platform, do in-game transfer to other registered users, and play coin flipping game with each other. In the meantime, a banker is required to perform as a dealer, which will prove the players are not cheating and get commission for this service. 
 
+<img src="/Users/blanker/Documents/Codings/DApp/CoinFlipping/docs/Documentation.assets/DApp Structure.png" alt="DApp Structure" style="zoom:50%;" />
+
 As a DApp, the backend should be the pure Ethereum Network, no database and backend engine is needed, and I need to write a contract to satisfy all the requirements. The user connects to the Ethereum Network to interact with the contract through web3. As long as the computer is conntected to the Internet and accessible to the Ethereum Network, the user could play this game. No backend server is needed, and I can even upload and host the static site on some third-party service like GitHub Pages. 
 
 ### Design
 
 In my consideration, I will provide 4 functions, namely, Resigtration, Balance Management, Dealer (Banker) and Coin Flipping Game. 
+
+<img src="/Users/blanker/Documents/Codings/DApp/CoinFlipping/docs/Documentation.assets/Use Case Diagram.svg" alt="Use Case Diagram " style="zoom:65%;" />
 
 #### User Registration
 
