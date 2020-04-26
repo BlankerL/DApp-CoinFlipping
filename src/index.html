@@ -22,83 +22,98 @@
 <body>
     <div class="container">
         <div class="row">
-            <div id="account_information_panel" class="column">
+            <div id="account_information_panel" class="col-md shadow p-3 mb-5 bg-white rounded">
                 <span>
                     <span>
                         <b>Address</b>
                     </span>
-                    <br>
                     <span id="address">Pending</span>
                 </span>
                 <p id="login">
                     Please click <a href="#" onclick="firstTimeLogin();">here</a> to allow us read your selected
                     Ethereum address from MetaMask.
                 </p>
-                <div id="register" style="display: none">
+                <div id="register" style=" display: none">
                     You have not register your account yet! Please fill in the account ID and you will be registered!
                     <div>
                         <form name="registration">
-                            <label>
-                                <input type="text" id="account_id" placeholder="Account ID">
-                            </label>
-                            <button type="button" id="button_register_account" onclick="createAccount();">
+                            <div class="input-group">
+                                <input type="text" id="account_id" class="form-control" placeholder="Account ID">
+                            </div>
+                            <br>
+                            <button type="button" id="button_register_account" class="btn btn-outline-success btn-block" onclick="createAccount();">
                                 Register
                             </button>
                         </form>
                     </div>
                 </div>
                 <div id="account_details" style="display: none">
-                    <h5>Account Details</h5>
-                    <span>
-                        <b>Username</b>
-                        <span id="username"></span>
-                    </span>
-                    <br>
-                    <span>
-                        <b>Balance</b>
-                        <span id="balance"></span>
-                    </span>
-                    <form name="deposit">
-                        <label>
-                            <input type="text" id="deposit_amount" placeholder="Deposit Amount in ETH">
-                        </label>
+                    <div>
+                        <h5 class="text-center">Account Details</h5>
+                            <span>
+                            <b>Username</b>
+                            <span id="username"></span>
+                        </span>
+                            <br>
+                            <span>
+                            <b>Balance</b>
+                            <span id="balance"></span>
+                        </span>
+                    </div>
+                    <form name="deposit" class="shadow-sm p-2 mb-2 bg-white rounded">
+                        <div class="input-group">
+                            <input type="text" id="deposit_amount" class="form-control" placeholder="Deposit Amount">
+                            <div class="input-group-append">
+                                <span class="input-group-text">ETH</span>
+                            </div>
+                        </div>
                         <br>
-                        <button type="button" id="button_deposit" onclick="depositEther();">
+                        <button type="button" id="button_deposit" class="btn btn-outline-primary btn-block" onclick="depositEther();">
                             Deposit
                         </button>
                     </form>
-                    <form name="withdraw">
-                        <label>
-                            <input type="text" id="withdraw_amount" placeholder="Withdraw Amount in ETH">
-                        </label>
+                    <form name="withdraw" class="shadow-sm p-2 mb-2 bg-white rounded">
+                        <div class="input-group">
+                            <input type="text" id="withdraw_amount" class="form-control" placeholder="Withdraw Amount">
+                            <div class="input-group-append">
+                                <span class="input-group-text">ETH</span>
+                            </div>
+                        </div>
                         <br>
-                        <button type="button" id="button_withdraw" onclick="withdrawEther();">
+                        <button type="button" id="button_withdraw" class="btn btn-outline-secondary btn-block" onclick="withdrawEther();">
                             Withdraw
                         </button>
                     </form>
-                    <form name="transfer">
-                        <label>
-                            <input type="text" id="transfer_target" placeholder="Receiver's address or ID">
-                        </label>
+                    <form name="transfer" class="shadow-sm p-2 mb-2 bg-white rounded">
+                        <div class="input-group">
+                            <input type="text" id="transfer_target" class="form-control" placeholder="Receiver's address or accountID">
+                        </div>
                         <br>
-                        <label>
-                            <input type="text" id="transfer_amount" placeholder="Transfer Amount in ETH">
-                        </label>
+                        <div class="input-group">
+                            <input type="text" id="transfer_amount" class="form-control" placeholder="Transfer Amount">
+                            <div class="input-group-append">
+                                <span class="input-group-text">ETH</span>
+                            </div>
+                        </div>
                         <br>
-                        <button type="button" id="button_transfer" onclick="transferEther();">
+                        <button type="button" id="button_transfer" class="btn btn-outline-danger btn-block" onclick="transferEther();">
                             Transfer
                         </button>
                     </form>
                 </div>
             </div>
-            <div id="game_panel" class="column" style="display: none">
-                <h1>Game</h1>
+            <div id="game_panel" class="col-md shadow p-3 mb-5 bg-white rounded" style="display: none">
+                <h5 class="text-center">Game</h5>
                 <div id="initialize_game" style="display: none">
                     <form id="form_initialize_game">
-                        <label>
-                            <input type="text" id="input_betValue" placeholder="Bet Value in ETH">
-                        </label>
-                        <button type="button" id="button_initialize_game" onclick="initializeGame();">
+                        <div class="input-group">
+                            <input type="text" id="input_betValue" class="form-control" placeholder="Bet Value">
+                            <div class="input-group-append">
+                                <span class="input-group-text">ETH</span>
+                            </div>
+                        </div>
+                        <br>
+                        <button type="button" id="button_initialize_game" class="btn btn-outline-success btn-block" onclick="initializeGame();">
                             Initialize Game
                         </button>
                     </form>
@@ -108,12 +123,13 @@
                         <b>Bet Value</b>
                         <span id="betValue">Pending</span>
                     </span>
-                    <button type="button" id="button_join_game" onclick="joinGame();">
+                    <br>
+                    <button type="button" id="button_join_game" class="btn btn-outline-success btn-block" onclick="joinGame();">
                         Join Game
                     </button>
                 </div>
                 <div id="inGame" style="display: none">
-                    <button type="button" id="button_flip_coin" onclick="flipCoin();">
+                    <button type="button" id="button_flip_coin" class="btn btn-outline-info btn-block" onclick="flipCoin();">
                         Flip the Coin
                     </button>
                 </div>
@@ -123,8 +139,8 @@
             </div>
         </div>
         <div class="row">
-            <div id="game_history_panel" class="column" style="display: none">
-                <h5>Last Game History</h5>
+            <div id="game_history_panel" class="col-md col-md shadow p-3 mb-5 bg-white rounded" style="display: none">
+                <h5 class="text-center">Last Game History</h5>
                 <div id="game_history">
                     <p>
                         <b>Game ID</b>
@@ -144,10 +160,10 @@
                     </p>
                 </div>
             </div>
-            <div id="transaction_history_panel" class="column" style="display: none">
-                <h5>Transaction History</h5>
+            <div id="transaction_history_panel" class="col-md col-md shadow p-3 mb-5 bg-white rounded" style="display: none">
+                <h5 class="text-center">Transaction History</h5>
                 <div id="transaction_history">
-                    <table>
+                    <table class="table table-striped">
                         <thead>
                             <tr>
                                 <th>
