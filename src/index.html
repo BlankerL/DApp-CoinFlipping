@@ -1,29 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Ethereum Coin Flipping Game</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha256-L/W5Wfqfa0sdBNIKN9cG6QA5F2qx4qICmU2VgLruv9Y=" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha256-WqU1JavFxSAMcLP2WIOI+GB2zWmShMI82mTpLDcqFUg=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.2.6/dist/web3.min.js" integrity="sha256-41uzGn9fA7UcxMsaZVctBr9HzW4VITzBDzsp5SzVDbQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+        integrity="sha256-L/W5Wfqfa0sdBNIKN9cG6QA5F2qx4qICmU2VgLruv9Y=" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js"
+        integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+        integrity="sha256-WqU1JavFxSAMcLP2WIOI+GB2zWmShMI82mTpLDcqFUg=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.2.6/dist/web3.min.js"
+        integrity="sha256-41uzGn9fA7UcxMsaZVctBr9HzW4VITzBDzsp5SzVDbQ=" crossorigin="anonymous"></script>
 
     <script src="js/coinFlipWeb3.js"></script>
+    <script src="js/account.js"></script>
+    <script src="js/game.js"></script>
 </head>
+
 <body>
     <div class="container">
         <div class="row">
             <div id="account_information_panel" class="column">
-        <span>
-            <span>
-                <b>Address</b>
-            </span>
-            <br>
-            <span id="address">Pending</span>
-        </span>
+                <span>
+                    <span>
+                        <b>Address</b>
+                    </span>
+                    <br>
+                    <span id="address">Pending</span>
+                </span>
                 <p id="login">
-                    Please click <a href="#" onclick="firstTimeLogin();">here</a> to allow us read your selected Ethereum address from MetaMask.
+                    Please click <a href="#" onclick="firstTimeLogin();">here</a> to allow us read your selected
+                    Ethereum address from MetaMask.
                 </p>
                 <div id="register" style="display: none">
                     You have not register your account yet! Please fill in the account ID and you will be registered!
@@ -41,14 +50,14 @@
                 <div id="account_details" style="display: none">
                     <h5>Account Details</h5>
                     <span>
-                <b>Username</b>
-                <span id="username"></span>
-            </span>
+                        <b>Username</b>
+                        <span id="username"></span>
+                    </span>
                     <br>
                     <span>
-                <b>Balance</b>
-                <span id="balance"></span>
-            </span>
+                        <b>Balance</b>
+                        <span id="balance"></span>
+                    </span>
                     <form name="deposit">
                         <label>
                             <input type="text" id="deposit_amount" placeholder="Deposit Amount in ETH">
@@ -95,10 +104,10 @@
                     </form>
                 </div>
                 <div id="joinGame" style="display: none">
-            <span>
-                <b>Bet Value</b>
-                <span id="betValue">Pending</span>
-            </span>
+                    <span>
+                        <b>Bet Value</b>
+                        <span id="betValue">Pending</span>
+                    </span>
                     <button type="button" id="button_join_game" onclick="joinGame();">
                         Join Game
                     </button>
@@ -182,12 +191,12 @@
                 $("#login").hide();
                 document.getElementById("address").innerText = address;
                 setTimeout(
-                    function() {
+                    function () {
                         coinFlipWeb3.contractInstance.methods.checkRegistration().call(
                             {
                                 from: coinFlipWeb3.web3Provider.selectedAddress
                             },
-                            function(error, result) {
+                            function (error, result) {
                                 if (error) {
                                     console.log(error);
                                 } else {
@@ -212,7 +221,6 @@
             }
         });
     </script>
-    <script src="js/account.js"></script>
-    <script src="js/game.js"></script>
 </body>
+
 </html>
