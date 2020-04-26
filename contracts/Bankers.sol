@@ -17,7 +17,7 @@ contract Bankers is Users {
 
     Banker internal banker;
 
-    constructor() public {
+    constructor() internal {
         banker = Banker({
             _bindAddress: msg.sender,
             balance: 0,

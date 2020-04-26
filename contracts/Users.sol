@@ -37,7 +37,7 @@ contract Users {
     }
 
     /// Initiate the counter of the transaction ID
-    uint transactionIDCounter = 1;
+    uint internal transactionIDCounter = 1;
 
     /**
      * @param _from Where the amount of ETH is transferred from
@@ -77,7 +77,7 @@ contract Users {
     }
 
     /// Mapping from transactionID to transaction's detail.
-    mapping (uint => Transaction) transactionHistory;
+    mapping (uint => Transaction) internal transactionHistory;
     /// Mapping from accountID to address.
     mapping(string => address) internal accountToAddress;
     /// Mapping from address to user's information.

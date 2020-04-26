@@ -8,12 +8,12 @@ contract CoinFlip is Bankers {
      * As these value are not stored permanently, they will be deleted after each round
      * @notice the value are deleted in houseCleaning() function
      */
-    mapping (address => bytes32) submittedHashValue;
+    mapping (address => bytes32) internal submittedHashValue;
     /// If the submitHashCount and submitClearTextCount reach 2, the next step will be processed automatically
-    uint submitHashCount = 0;
-    uint submitClearTextCount = 0;
-    /// The front-end will read this value to determine when the user can reveal the clear text.
-    bool bothSubmitHash = false;
+    uint internal submitHashCount = 0;
+    uint internal submitClearTextCount = 0;
+    /// The front-end will read this value to determine when the user can reveal the clear text
+    bool internal bothSubmitHash = false;
 
     /**
      * Struct for Game
@@ -34,10 +34,13 @@ contract CoinFlip is Bankers {
     }
 
     /// Self-increasing gameID counter
-    uint gameID = 1;
+    uint internal gameID = 1;
     /// gameID => Game struct mapping
-    mapping (uint => Game) gameHistory;
+    mapping (uint => Game) internal gameHistory;
 
+    /**
+     * @return Status of the on-going game
+     */
     function currentGameStatus() external view returns (uint) {
         return gameHistory[gameID].status;
     }
@@ -45,14 +48,15 @@ contract CoinFlip is Bankers {
     /**
      * Initialize a game
      * a game struct will be initialize and the betValue will be move from player's balance to banker's
-     * @param betValue only the player who initialize the game can set the betValue
+     * @param betValue only the player who initialize the game can set the betValue,
      *                 the participant can only accept it or wait until the game ends
      * @notice once the game is initialized, the currentWaiting will be true,
-     *         and the front-end will not allow user to start a new game, they can only join the current one or wait.
+     *         and the front-end will not allow user to start a new game, they can only join the current one or wait
      */
     function initializeGame(uint betValue) external {
         require(gameHistory[gameID].status == 0, "There is a game waiting for player, you cannot start a new game now!");
         require(userList[msg.sender].balance >= betValue, "You do not have sufficient balance.");
+
         // Initialize the game
         Game storage game = gameHistory[gameID];
         game.ID = gameID;
