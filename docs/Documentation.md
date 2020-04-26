@@ -12,7 +12,7 @@ As a DApp, the backend should be the pure Ethereum Network, no database and back
 
 In my consideration, I will provide 4 functions, namely, Resigtration, Balance Management, Dealer (Banker) and Coin Flipping Game. 
 
-#### Registration
+#### User Registration
 
 User opens the website. If the user is not registered yet, the site will not showing other contents, and it should register with a proper `accountID` first. 
 
@@ -57,6 +57,25 @@ Once the user withdraw an amount of ETH from the contract through `withdraw()` f
 User can transfer its Ether (ETH) within the contract to another registered user by its address or accountID. 
 
 Once the user transfer an amount of ETH to another user, the `balance` of the user will decrease by this amount and the `balance` of the target will increase by this amount. 
+
+##### Transaction Histories
+
+All the balance change will be record by a `Transaction` struct. 
+
+```solidity
+struct Transaction {
+    uint _transactionID;
+    uint _time;
+    string _from;
+    string _to;
+    uint _amount;
+    string _type;
+}
+```
+
+Once the user deposit, withdraw, transfer, receive transaction, bet in a game, win the game, a `Transaction` instance will be initialized and the `transactionID` will be appended to user's `transactionRecord`. Therefore, the user can check all the transaction records of him. 
+
+As required, the user can see its transaction records within a day, so a limitation is appended on the `transactionCheck()` function to check the time. Also, a criterion is implemented in the JavaScript to prevent the user request the outdated transaction records. 
 
 #### Dealer (Banker)
 
@@ -185,16 +204,76 @@ For the given protocol, overall speaking, this outline will work, but still have
 
    **Solution**
 
-   - As mentioned in [Dealer (Banker)](#dealer-banker) part, I implement the whole banker within the contract. Once the contract is deployed to the Main Ethereum Network, everyone can real the contract and the code, make sure I am actually not cheating at all. There is no real third-party banker involved in this game, the winner is picked out by the contract automatically. Therefore, we do not need to worry about the banker cheats or quits his job as long as the Main Ethereum Network functions. In the meantime, the banker will not maintain the transaction records or game histories, all these things are maintained in the contract. (**TODO**)
+   - As mentioned in [Dealer (Banker)](#dealer-banker) part, I implement the whole banker within the contract. Once the contract is deployed to the Main Ethereum Network, everyone can real the contract and the code, make sure I am actually not cheating at all. There is no real third-party banker involved in this game, the winner is picked out by the contract automatically. Therefore, we do not need to worry about the banker cheats or quits his job as long as the Main Ethereum Network functions. In the meantime, the banker will not maintain the transaction records or game histories, all these things are maintained in the contract. (see [Balance Management](#balance-management) and [Coin Flipping Game](#coin-flipping-game))
 
 ### Measurement and Analysis
 
-Use as a emulator to see the design of the blockchain. 
+As I suppose I do not fully understand this requirement, I will discuss this topic from my own points of view. 
 
-initialize the user/game in the function to cut down the deployment fee and transaction gas cost.
-Use mapping instead of array, because array is based on mapping, which will cost more gas.
+#### Evaluation of the Ethereum Network
 
+I will compare the performance of Ethereum Network with other mainstream networks supporting DApp, namely Tron and EOS.
 
+|                                 |     Ethereum     |          EOS          |         Tron         |
+| :-----------------------------: | :--------------: | :-------------------: | :------------------: |
+|   **Block Time (per block)**    | 10 to 20 seconds |      0.5 second       |      0.5 second      |
+|             **TPS**             |        10        | Not limited, max 3996 | Not limited, max 748 |
+| **Time Consumption (per Game)** |    50 seconds    |      2.5 seconds      |     2.5 seconds      |
+
+As the consensus algorithm of Ethereum Network is Proof of Work (PoW) and the consensus algorithm of EOS and Tron is Delegated Proof of Stake (DPoS), the Block Time for EOS and Tron will be significantly reduced because DPoS does not require the worker to do hash value calculation for each block, and the worker can focus on maintaining the blockchain. 
+
+As has been mentioned by Vitalik Buterin on [Ethereum GitHub Repository](https://github.com/ethereum/wiki/wiki/Proof-of-Stake-FAQ) and [other news](https://cointelegraph.com/news/pos-will-make-ethereum-more-secure-than-bitcoin-says-vitalik-buterin), the Ethereum might switch to Proof of Stake (PoS) consensus algorithm in the future, which will lead to higher block time and larger TPS with less cost. 
+
+##### Block Time of Ethereum Network
+
+As the block time of Ethereum Network is 10 to 20 seconds per block, if we would like to run such a game on Ethereum Network, users will have to wait for at least 10 seconds for the next movement, which will be quite time-consuming. 
+
+For each round of the game, it will take at least 5 block time for my contract (see [Block Time of the Contract](#block-time-of-the-contract)). Therefore, if the contract is deployed on Ethereum Network, it will take at least 50 seconds for each game. However, if the game is deployed on EOS or Tron Network, it will only take 2.5 seconds for each game. 
+
+##### Block Size and TPS of Ethereum Network
+
+As of April 27, 2020, the unconfirmed transactions on Ethereum Network is $73028$. That is to say, even if the block time is 10 to 20 seconds per block, it will actually take a long time for the block to confirm (much longer than 10 to 20 seconds, because our transaction is waiting in queue). 
+
+#### Evaluation of the Contract
+
+##### Gas Cost of the Contract
+
+1. I have tried my best to cut down the deployment fee and the gas cost of the contract. I am not comparing my results with others, but I think with the same functions achieved, my contract will cost much less than others. Here is the point: 
+
+   - Use `mapping` instead of `array`. As mentioned on [Stack Exchange](https://ethereum.stackexchange.com/a/37594/59888), in Solidity, the `array` is built based on `mapping`, so manipulating the `array` will cost more gas than `mapping`. 
+
+   - Initialize an instance if the object is called many times in a function. For example, if the parameters in a certain `Game` struct needs to be modified many times, I will initialize a `Game storage game` instance for this maninpulation, and consequently the cost will be lower.
+
+     **Evidence**
+
+2. As what I have implemented, users on my platform need to deposit ETH into the contract before initialize/join a game, and this method will save $21000$ gas in each transaction comparing to a contract that users need to transfer ETH every time they initialize/join a game. 
+   - Deposit before playing: the contract will maintain a `balance` for this user, and every time the user interact with the contract, the contract is only manipulating the `balance` for this user, and transaction of ETH will not actually happen, which will save $21000$ gas for the action of sending ETH transaction. 
+   - Transfer every time: if there is no `balance` for the user, the users need to do a transaction every time they participate in a game, an a pure transaction of ETH will cost $21000$ gas. If the user be the winner, it will cost another $21000$ gas for receiving this transaction. 
+
+##### Block Time of the Contract
+
+As we are deploying this contract on Ganache, which will do auto-mining for all the blocks and the block time is not defined (no latency). However, in the actually Ethereum Network, the block time is 10 to 20 seconds per block. Therefore, the speed of the game will be significantly influenced by the block time. 
+
+**Comparision**
+
+- Traditional (with real-person banker) 2-player minimum number of blocks for one round: at least 6 blocks/60 seconds
+  - Initialize the game (1 block)
+  - Join the game (1 block)
+  - Generate hash values and submit (1 block)
+  - Banker confirms the receiving of hash values, informs the participants to submit random number in clear text **(at least 1 block)**
+    - As the banker need to send a transaction to the contract to confirm the receiving of hash values mannually, it will at least need 1 block for this transaction to be recorded in the blockchain. If the banker does not confirm in time, there might need more time for the confirmation. 
+  - Submit random number in clear text **(at least 1 block)**
+    - As the participants needs to check the banker's information from time to time, they might not be able to submit the clear text once the banker inform them to submit. Therefore, it will cost at least 1 block time to submit. 
+  - Pick out the winner and house cleaning (1 block)
+- My 2-player minimum number of blocks for one round: 5 blocks/50 seconds (2 players)
+  - Initialize the game (1 block)
+  - Join the game (1 block)
+  - Generate hash values and submit (1 block)
+  - `bothHashSubmitted` changed to `true` once all hash values received **(0 block)**
+    - As the banker is implemented in the contract, once both hash values are received, the contract will automatically turned `bothHashSubmitted` to `true`, which is in the same block of the previous one. 
+  - Submit random number in clear text automatically **(1 block)**
+    - As the JavaScript will listen to the change of the `bothHashSubmitted` parameter, once the parameter is changed, the JavaScript will send out the clear text automatically. Therefore, it will always take only 1 block time for this process. 
+  - Pick out the winner and house clearning (1 block)
 
 ### Reference
 
