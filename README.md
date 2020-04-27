@@ -3,7 +3,7 @@
 
 This is my assignment outcome for COMP7408 Distributed Ledger and Blockchain Technology Assignment 2 in the University of Hong Kong. This project includes user management and a coin flipping game. It has the following characteristics: 
 
-- **Highly annoymous.** User cannot see the counterparties' username in the game and game history. In game history, only the user's index and winner's index will be provided. 
+- **Highly anoymous and confidential.** User cannot see the counterparties' username (accountID) in the game and game history. In game history, only the user's index and winner's index will be provided. Unless the counterparties go to the [Ethereum Blockchain Explorer](https://etherscan.io/) to track the transactions one by one, they will never know your actual accountID. 
 - **High speed.** The banker (dealer) is implemented within the contract, no real-person dealer is needed. Therefore, the speed of the game will be much faster (at least 16.7% faster if the users always act in time). This part is discussed in [Design Document](docs/Design Document.md). 
 - **Light weight.** There is no server/backend actually needed, all the user/game/transaction information are stored in the blockchain. Even with GitHub Pages, a full functional site can be hosted without any effort. 
 
