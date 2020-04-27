@@ -1,4 +1,6 @@
 ## Machine Problem: Distributed Coin Flipping Game Using Ethereum
+**It is recommended to use Markdown file, as some of the hyperlinks might not work properly after exported as PDF file.** 
+
 ### Description
 
 This is my assignment outcome for COMP7408 Distributed Ledger and Blockchain Technology Assignment 2 in the University of Hong Kong. This project includes user management and a coin flipping game. It has the following characteristics: 
@@ -57,8 +59,6 @@ Documentation are placed in the `docs` folder.
 `User Manual` is a brief introduction of how you can interact with this project. 
 
 All the static files are stored in the `*.assets` folders, you do not need to access this folders, they will be automatically loaded into the Markdown files. 
-
-**It is recommended to use Markdown file, as some of the hyperlinks might not work properly after exported as PDF file.** 
 
 ### Deployment
 

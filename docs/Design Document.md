@@ -38,8 +38,6 @@ struct User {
 
 #### Balance Management
 
-##### Introduction
-
 For each user, it owns an Ethereum account, which is its private wallet. For this platform, it initialize an `User` struct for each user and maintaining their balance. Therefore, user does not need to do an transaction every time when it would like to initialize/join a game. As the `accountID` and `address` are all identical to each other, only the user itself can manage its balance. 
 
 Once the user has registered successfully, it could perform the Balance Management. In my consideration, Balance Management should cover the following functions. 
@@ -249,14 +247,12 @@ As of April 27, 2020, the unconfirmed transactions on Ethereum Network is $73028
 
 1. I have tried my best to cut down the deployment fee and the gas cost of the contract. I am not comparing my results with others, but I think with the same functions achieved, my contract will cost much less than others. Here is the point: 
 
-   - Use `mapping` instead of `array`. As mentioned on [Stack Exchange](https://ethereum.stackexchange.com/a/37594/59888), in Solidity, the `array` is built based on `mapping`, so manipulating the `array` will cost more gas than `mapping`. 
+   - **Use `mapping` instead of `array`.** As mentioned on [Stack Exchange](https://ethereum.stackexchange.com/a/37594/59888), in Solidity, the `array` is built based on `mapping`, so manipulating the `array` will cost more gas than `mapping`. 
 
-   - Initialize an instance if the object is called many times in a function. For example, if the parameters in a certain `Game` struct needs to be modified many times, I will initialize a `Game storage game` instance for this maninpulation, and consequently the cost will be lower.
-
-     **Evidence**
+   - **Initialize an instance if the object is called many times in a function.** For example, if the parameters in a certain `Game` struct needs to be modified many times, I will initialize a `Game storage game` instance for this maninpulation, and consequently the cost will be lower.
 
 2. As what I have implemented, users on my platform need to deposit ETH into the contract before initialize/join a game, and this method will save $21000$ gas in each transaction comparing to a contract that users need to transfer ETH every time they initialize/join a game. 
-   - Deposit before playing: the contract will maintain a `balance` for this user, and every time the user interact with the contract, the contract is only manipulating the `balance` for this user, and transaction of ETH will not actually happen, which will save $21000$ gas for the action of sending ETH transaction. 
+   - **Deposit before playing.** The contract will maintain a `balance` for this user, and every time the user interact with the contract, the contract is only manipulating the `balance` for this user, and transaction of ETH will not actually happen, which will save $21000$ gas for the action of sending ETH transaction. 
    - Transfer every time: if there is no `balance` for the user, the users need to do a transaction every time they participate in a game, an a pure transaction of ETH will cost $21000$ gas. If the user be the winner, it will cost another $21000$ gas for receiving this transaction. 
 
 ##### Block Time of the Contract
@@ -274,7 +270,7 @@ As we are deploying this contract on Ganache, which will do auto-mining for all 
   - Submit random number in clear text **(at least 1 block)**
     - As the participants needs to check the banker's information from time to time, they might not be able to submit the clear text once the banker inform them to submit. Therefore, it will cost at least 1 block time to submit. 
   - Pick out the winner and house cleaning (1 block)
-- My 2-player minimum number of blocks for one round: 5 blocks/50 seconds
+- My 2-player minimum number of blocks for one round: **5 blocks/50 seconds**
   - Initialize the game (1 block)
   - Join the game (1 block)
   - Generate hash values and submit (1 block)
