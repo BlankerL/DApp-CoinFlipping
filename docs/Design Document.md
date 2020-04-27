@@ -177,9 +177,11 @@ The participants do not need to do anything else, all they need to do is to conf
 
 ##### Round 4
 
-Once the banker receive all the clear text, it will start the `validation()` function, which is to check whether all the users faithful in the process. If all the participants are loyal, the banker will get the sum value of the clear text, calculate the remainder with the `addmod()` function provided by Solidity. This remainder will be the index of the participants in the `player` list. 
+Once the banker receive all the clear text, it will start the `validation()` function, which is to check whether all the users faithful in the process. If all the participants are loyal, the banker will get the sum value of the clear text and calculate the remainder. This remainder will be the index of the participants in the `player` list. 
 
-If at least 1 user is detected cheating, the game will end automatically and the deposit will be refund to the participants account. I do not implement a punishment here because of the following reasons: 
+###### Cheating Detection
+
+If at least 1 user is detected cheating, which means the hash value generated from the remote and in the contract do no match, the game will end automatically and the deposit will be refund to the participants account. I do not implement a punishment here because of the following reasons: 
 
 - The random number is a private value in the `flipCoin()` funtion in JavaScript, a normal user cannot read this value in the browser. If the attacker would like to modify the value, it need to capture the browser's traffic and manipulate the hexadecimal transaction data sent by MetaMask. 
 - As the attacker can capture the traffic and modify the transaction data on its local machine, it can also capture the traffic of other participants. If an attacker capture other participants package and change the transaction data, and leads to a loss for those participants, that will be quite unfair for them. 

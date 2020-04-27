@@ -52,7 +52,7 @@ Files in `js` folder are the JavaScript written by me. Other dependencies (JavaS
 
 #### Documentation
 
-Documentation are placed in the `docs` folder. 
+Documentations are placed in the `docs` folder. 
 
 `Design Document` is mainly about the desiging of this project, and answering all the questions. 
 
@@ -72,10 +72,10 @@ truffle migrate --reset
 
 You will get a contract address of the `CoinFlip`, the information will be similar to the following one. Therefore, the contract address is `0xc5C7187AFDa52957bE5052Cf5d9fdc11E0120111`.
 
-```
+```bash
 > transaction hash:    0xbfab5e31d8c82739ad02541b5f64204c3ac5a2c41cb025361675427ade09215e
 > Blocks: 0            Seconds: 0
-> contract address:    0xc5C7187AFDa52957bE5052Cf5d9fdc11E0120111
+> contract address:    0xc5C7187AFDa52957bE5052Cf5d9fdc11E0120111  # Contract Address
 > block number:        854
 > block timestamp:     1587999346
 > account:             0x7a14Fbf94e944769c125e53e4A8993eC65322764
