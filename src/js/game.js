@@ -139,8 +139,7 @@ function submitClearText(clearText) {
         web3.utils.toBN("" + clearText)
     ).send(
         {
-            from: coinFlipWeb3.web3Provider.selectedAddress,
-            gas: 2000000
+            from: coinFlipWeb3.web3Provider.selectedAddress
         },
         function (error, result) {
             if (error) {

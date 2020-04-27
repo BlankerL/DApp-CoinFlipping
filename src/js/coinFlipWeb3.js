@@ -24,6 +24,11 @@ coinFlipWeb3 = {
         $.getJSON('contracts/CoinFlip.json', function(data) {
             // Get the necessary contract artifact file and instantiate it with truffle-contract.
             coinFlipWeb3.contractInstance = new web3.eth.Contract(data['abi'], coinFlipWeb3.contractAddress);
+            coinFlipWeb3.contractInstance.defaults(
+                {
+                    gasLimit: 1000000
+                }
+            );
         });
     },
 };
