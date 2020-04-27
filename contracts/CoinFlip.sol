@@ -4,18 +4,6 @@ import "./Bankers.sol";
 
 contract CoinFlip is Bankers {
     /**
-     * Players need to submit the hash values of their clear text before revealing
-     * As these value are not stored permanently, they will be deleted after each round
-     * @notice the value are deleted in houseCleaning() function
-     */
-    mapping (address => bytes32) internal submittedHashValue;
-    /// If the submitHashCount and submitClearTextCount reach 2, the next step will be processed automatically
-    uint internal submitHashCount = 0;
-    uint internal submitClearTextCount = 0;
-    /// The front-end will read this value to determine when the user can reveal the clear text
-    bool internal bothSubmitHash = false;
-
-    /**
      * Struct for Game
      * @param gameID the self-increasing ID of the game, the gameID will increase by 1 in each round
      * @param status the status of the game. 0: not started, 1: waiting for participant, 2: in process, 3: finished
@@ -40,13 +28,16 @@ contract CoinFlip is Bankers {
     mapping (uint => Game) internal gameHistory;
 
     /**
-     * @return Status of the on-going game
+     * Players need to submit the hash values of their clear text before revealing
+     * As these value are not stored permanently, they will be deleted after each round
+     * @notice the value are deleted in houseCleaning() function
      */
-    function currentGameStatus() external view returns (uint) {
-        return gameHistory[gameID].status;
-    }
-
-    event test(uint);
+    mapping (address => bytes32) internal submittedHashValue;
+    /// If the submitHashCount and submitClearTextCount reach 2, the next step will be processed automatically
+    uint internal submitHashCount = 0;
+    uint internal submitClearTextCount = 0;
+    /// The front-end will read this value to determine when the user can reveal the clear text
+    bool internal allHashSubmitted = false;
 
     /**
      * Initialize a game
@@ -58,6 +49,7 @@ contract CoinFlip is Bankers {
      *         and the front-end will not allow user to start a new game, they can only join the current one or wait
      */
     function initializeGame(uint betValue, uint _maxPlayer) external {
+        // Initialize temporary instance for easier manipulation and less gas cost.
         Game storage game = gameHistory[gameID];
         User storage user = userList[msg.sender];
 
@@ -131,26 +123,9 @@ contract CoinFlip is Bankers {
     }
 
     /**
-     * @return current participants in this round
-     */
-    function currentInGamePlayer() external view returns (address[] memory) {
-        return gameHistory[gameID].player;
-    }
-
-    /**
-     * @return bet_value Bet value for current round
-     * @return max_player Max player allowed for current game
-     * @return current_player Number of current enrolled players
-     */
-    function currentGameInformation() external view returns (uint bet_value, uint max_player, uint current_player) {
-        Game storage game = gameHistory[gameID];
-        return (game.betValue, game.maxPlayer, game.player.length);
-    }
-
-    /**
      * Players submit their hash values through this function.
      * @param hashValue each player submit the hash value generated from their clear text.
-     * @dev once both players submit their hash values, the bothSubmitHash will be true,
+     * @dev once both players submit their hash values, the allHashSubmitted will be true,
      *      and the player can reveal their clear text.
      */
     function submitHash(bytes32 hashValue) external enrolledPlayer {
@@ -163,7 +138,61 @@ contract CoinFlip is Bankers {
         submitHashCount += 1;
 
         if (submitHashCount == gameHistory[gameID].maxPlayer) {
-            bothSubmitHash = true;
+            allHashSubmitted = true;
+        }
+    }
+
+    /**
+     * Function for players to submit their clear text values.
+     * Once 2 players submitted the clear text values, teh findWinner process will start.
+     * @param randomNumber the automatically generated randomNumber for the player.
+     */
+    function submitClearText(uint randomNumber) external enrolledPlayer {
+        // Initialize temporary instance for easier manipulation and less gas cost
+        Game storage game = gameHistory[gameID];
+
+        // Submit hash value before submiting clear text.
+        require(submittedHashValue[msg.sender] != "", "You have not submit hash value yet.");
+        // Clear text can only be submitted until all players submit the hash value.
+        require(submitHashCount == game.maxPlayer, "Not all players have submitted the hash value!");
+        // Prevent modification.
+        require(game.submittedClearText[msg.sender] == 0, "You have already submitted your result.");
+
+        // Record the clear text into the game history
+        game.submittedClearText[msg.sender] = randomNumber;
+        submitClearTextCount += 1;
+
+        // If all players submitted their clear text, find the winner automatically.
+        if (submitClearTextCount == game.maxPlayer) {
+            findWinner();
+        }
+    }
+
+    /**
+     * If there is not cheaters found, the banker will find the winner.
+     * After find the winner or detect cheating, the houseCleaning() will start.
+     * @notice the player who initialize the game will always choose the mod == 0.
+     */
+    function findWinner() private returns (address) {
+        // Initialize temporary instance for easier manipulation and less gas cost
+        Game storage game = gameHistory[gameID];
+
+        if (validate() == 0) {
+            uint sumValue = 0;
+            for (uint i = 0; i < game.maxPlayer; i++) {
+                sumValue += game.submittedClearText[game.player[i]];
+            }
+            // Choose the winner
+            uint remainder = sumValue % game.maxPlayer;
+            game.winner = game.player[remainder];
+            // Transfer balance to the winner
+            balanceTransfer();
+            houseCleaning();
+            return game.winner;
+        } else {
+            detectCheating();
+            houseCleaning();
+            return address(0);
         }
     }
 
@@ -204,34 +233,6 @@ contract CoinFlip is Bankers {
     }
 
     /**
-     * If there is not cheaters found, the banker will find the winner.
-     * After find the winner or detect cheating, the houseCleaning() will start.
-     * @notice the player who initialize the game will always choose the mod == 0.
-     */
-    function findWinner() private returns (address) {
-        // Initialize temporary instance for easier manipulation and less gas cost
-        Game storage game = gameHistory[gameID];
-
-        if (validate() == 0) {
-            uint sumValue = 0;
-            for (uint i = 0; i < game.maxPlayer; i++) {
-                sumValue += game.submittedClearText[game.player[i]];
-            }
-            // Choose the winner
-            uint remainder = sumValue % game.maxPlayer;
-            game.winner = game.player[remainder];
-            // Transfer balance to the winner
-            balanceTransfer();
-            houseCleaning();
-            return game.winner;
-        } else {
-            detectCheating();
-            houseCleaning();
-            return address(0);
-        }
-    }
-
-    /**
      * Transfer 95% of the temporary gameDeposit to the winner, 5% to the banker.
      * @dev To cut down the fee, transfer the balance within the contract, rather than directly to winner's address.
      */
@@ -250,36 +251,63 @@ contract CoinFlip is Bankers {
     }
 
     /**
-     * Function for players to submit their clear text values.
-     * Once 2 players submitted the clear text values, teh findWinner process will start.
-     * @param randomNumber the automatically generated randomNumber for the player.
+     * House cleaning process to release resources and prepare for the next round.
      */
-    function submitClearText(uint randomNumber) external enrolledPlayer {
+    function houseCleaning() private {
         // Initialize temporary instance for easier manipulation and less gas cost
         Game storage game = gameHistory[gameID];
 
-        // Submit hash value before submiting clear text.
-        require(submittedHashValue[msg.sender] != "", "You have not submit hash value yet.");
-        // Clear text can only be submitted until all players submit the hash value.
-        require(submitHashCount == game.maxPlayer, "Not all players have submitted the hash value!");
-        // Prevent modification.
-        require(game.submittedClearText[msg.sender] == 0, "You have already submitted your result.");
-
-        // Record the clear text into the game history
-        game.submittedClearText[msg.sender] = randomNumber;
-        submitClearTextCount += 1;
-
-        // If all players submitted their clear text, find the winner automatically.
-        if (submitClearTextCount == game.maxPlayer) {
-            findWinner();
+        // Update the game status to 3
+        game.status = 3;
+        for (uint i = 0; i < game.maxPlayer; i++) {
+            // Change the lastGameID of the user to this game (user can only see the history of past game)
+            userList[game.player[i]].lastGameID = gameID;
+            // Clear submitted hash value
+            delete submittedHashValue[game.player[i]];
         }
+
+        // Delete the value stored in the parameter
+        delete allHashSubmitted;
+        delete submitHashCount;
+        delete submitClearTextCount;
+
+        // gameID increase by 1, prepare for the next game
+        gameID += 1;
     }
 
     /**
-     * @dev prepare for the JavaScript to check whether all players have submitted the hash value.
+     * @return Status of the on-going game
+     * @dev The front-end will use this function to determine what is shown in the Game Panel
      */
-    function bothSubmitHashCheck() external view enrolledPlayer returns (bool){
-        return bothSubmitHash;
+    function currentGameStatus() external view returns (uint) {
+        return gameHistory[gameID].status;
+    }
+
+    /**
+     * @return current participants in this round
+     * @dev The front-end will use this function to check if the player have already enrolled in the game
+     */
+    function currentInGamePlayer() external view returns (address[] memory) {
+        return gameHistory[gameID].player;
+    }
+
+    /**
+     * @return bet_value Bet value for current round
+     * @return max_player Max player allowed for current game
+     * @return current_player Number of current enrolled players
+     * @dev The front-end will show this information in Game Panel
+     */
+    function currentGameInformation() external view returns (uint bet_value, uint max_player, uint current_player) {
+        Game storage game = gameHistory[gameID];
+        return (game.betValue, game.maxPlayer, game.player.length);
+    }
+
+    /**
+     * @dev Prepare for JavaScript to check whether all players have submitted the hash value
+     *      If yes, the JavaScript will submit the random number in clear text
+     */
+    function checkAllSubmitHash() external view enrolledPlayer returns (bool){
+        return allHashSubmitted;
     }
 
     /**
@@ -288,6 +316,7 @@ contract CoinFlip is Bankers {
      * @return total_player  Number of players in last game
      * @return your_index Index of the msg.sender in last game
      * @return winner_index Index of the winner in last game
+     * @dev The front-end will use this function to render Last Game History Panel
      */
     function lastGameHistory() external view returns (uint game_id, uint bet_value, uint total_player, uint your_index, uint winner_index) {
         // Initialize temporary instance for easier manipulation and less gas cost
@@ -308,30 +337,5 @@ contract CoinFlip is Bankers {
             }
         }
         return (game.ID, game.betValue, game.player.length, userIndex, winnerIndex);
-    }
-
-    /**
-     * House cleaning process to release resources and prepare for the next round.
-     */
-    function houseCleaning() private {
-        // Initialize temporary instance for easier manipulation and less gas cost
-        Game storage game = gameHistory[gameID];
-
-        // Update the game status to 3
-        game.status = 3;
-        for (uint i = 0; i < game.maxPlayer; i++) {
-            // Change the lastGameID of the user to this game (user can only see the history of past game)
-            userList[game.player[i]].lastGameID = gameID;
-            // Clear submitted hash value
-            delete submittedHashValue[game.player[i]];
-        }
-
-        // Delete the value stored in the parameter
-        delete bothSubmitHash;
-        delete submitHashCount;
-        delete submitClearTextCount;
-
-        // gameID increase by 1, prepare for the next game
-        gameID += 1;
     }
 }

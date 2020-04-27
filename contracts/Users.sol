@@ -38,59 +38,6 @@ contract Users {
 
     /// Initiate the counter of the transaction ID
     uint internal transactionIDCounter = 1;
-
-    /**
-     * @param _from Where the amount of ETH is transferred from
-     * @param _to Where the amount of ETH is transferred to
-     * @param _amount The amount of ETH being transferred
-     * @param _type The characteristic of this transaction, e.g., Deposit, Withdraw, Transfer, Bet, Reward, etc.
-     * @dev Make the function `internal`, so it will be available in the subcontract(s).
-     */
-    function addTransaction(string memory _from, string memory _to, uint _amount, string memory _type) internal {
-        Transaction storage transaction = transactionHistory[transactionIDCounter];
-        transaction._transactionID = transactionIDCounter;
-        transaction._time = now;
-        transaction._from = _from;
-        transaction._to = _to;
-        transaction._amount = _amount;
-        transaction._type = _type;
-
-        userList[accountToAddress[_from]].transactionRecord.push(transactionIDCounter);
-        userList[accountToAddress[_to]].transactionRecord.push(transactionIDCounter);
-
-        transactionIDCounter += 1;
-    }
-
-    /**
-     * Reveal the transactions within 1 day to users
-     * @param targetTransactionID The transaction to reveal the details
-     * @return _id The transaction ID
-     * @return _type The type of the transaction
-     * @return _time The timestamp of the transaction
-     * @param _from Where the amount of ETH is transferred from
-     * @param _to Where the amount of ETH is transferred to
-     * @param _amount the The amount of ETH being transferred
-     * @notice User can only see the transaction belongs to it
-     */
-    function userTransactionCheck(uint targetTransactionID) external view returns (uint _id, string memory _type, uint _time, string memory _from, string memory _to, uint _amount) {
-        // Initialize temporary instance for easier manipulation and less gas cost
-        User memory user = userList[msg.sender];
-        Transaction memory transaction = transactionHistory[targetTransactionID];
-
-        // The user can only read transaction history belongs to it
-        require(user.bindAddress == accountToAddress[transaction._from] || user.bindAddress == accountToAddress[transaction._to], "This transaction does not belongs to you!");
-        require(now - transaction._time <= 1 days, "You can only see transaction details within 1 day!");
-
-        return (transaction._transactionID, transaction._type, transaction._time, transaction._from, transaction._to, transaction._amount);
-    }
-
-    /**
-     * The user's transaction history
-     */
-    function userTransactionArrayCheck() external view returns (uint[] memory) {
-        return userList[msg.sender].transactionRecord;
-    }
-
     /// Mapping from transactionID to transaction's detail.
     mapping (uint => Transaction) internal transactionHistory;
     /// Mapping from accountID to address.
@@ -143,19 +90,6 @@ contract Users {
     }
 
     /**
-     * Check if the user have registered or not, if yes, return the accountID
-     */
-    function checkRegistration() external view returns (string memory) {
-        // Initialize temporary instance for easier manipulation and less gas cost
-        User storage user = userList[msg.sender];
-        if (bytes(user.accountID).length != 0) {
-            return user.accountID;
-        }
-
-        return user.accountID;
-    }
-
-    /**
      * User deposit the money to the contract, and the contract will give him a "virtual" balance,
      * similar to deposit fiat money to bank
      */
@@ -163,6 +97,20 @@ contract Users {
         userList[msg.sender].balance += msg.value;
         // Append transaction record
         addTransaction("External Wallet", userList[msg.sender].accountID, msg.value, "Deposit");
+    }
+
+    /**
+     * Withdraw the balance from the contract, get the token back to his/her ethureum address
+     * @param amount The amount of balance to withdraw.
+     */
+    function withdraw(uint amount) external payable registered enoughBalance(amount) {
+        // Initialize temporary instance for easier manipulation and less gas cost
+        User storage user = userList[msg.sender];
+        // Manipulate the balance
+        user.balance -= amount;
+        msg.sender.transfer(amount);
+        // Append transaction record
+        addTransaction(user.accountID, "External Wallet", amount, "Withdraw");
     }
 
     /**
@@ -208,21 +156,74 @@ contract Users {
     }
 
     /**
-     * Withdraw the balance from the contract, get the token back to his/her ethureum address
-     * @param amount The amount of balance to withdraw.
+     * Generate transaction records for each transaction
+     * @param _from Where the amount of ETH is transferred from
+     * @param _to Where the amount of ETH is transferred to
+     * @param _amount The amount of ETH being transferred
+     * @param _type The characteristic of this transaction, e.g., Deposit, Withdraw, Transfer, Bet, Reward, etc.
      */
-    function withdraw(uint amount) external payable registered enoughBalance(amount) {
-        // Initialize temporary instance for easier manipulation and less gas cost
-        User storage user = userList[msg.sender];
-        // Manipulate the balance
-        user.balance -= amount;
-        msg.sender.transfer(amount);
-        // Append transaction record
-        addTransaction(user.accountID, "External Wallet", amount, "Withdraw");
+    function addTransaction(string memory _from, string memory _to, uint _amount, string memory _type) internal {
+        Transaction storage transaction = transactionHistory[transactionIDCounter];
+        transaction._transactionID = transactionIDCounter;
+        transaction._time = now;
+        transaction._from = _from;
+        transaction._to = _to;
+        transaction._amount = _amount;
+        transaction._type = _type;
+
+        userList[accountToAddress[_from]].transactionRecord.push(transactionIDCounter);
+        userList[accountToAddress[_to]].transactionRecord.push(transactionIDCounter);
+
+        transactionIDCounter += 1;
     }
 
     /**
-     * Show the balance.
+     * @return Array of user's transaction ID
+     * @dev Used in the front-end for further check individual transaction record
+     */
+    function userTransactionArrayCheck() external view returns (uint[] memory) {
+        return userList[msg.sender].transactionRecord;
+    }
+
+    /**
+     * Reveal the transactions within 1 day to users
+     * @param targetTransactionID The transaction to reveal the details
+     * @return _id The transaction ID
+     * @return _type The type of the transaction
+     * @return _time The timestamp of the transaction
+     * @return _from Where the amount of ETH is transferred from
+     * @return _to Where the amount of ETH is transferred to
+     * @return _amount the The amount of ETH being transferred
+     * @notice User can only see the transaction belongs to it
+     */
+    function userTransactionCheck(uint targetTransactionID) external view returns (uint _id, string memory _type, uint _time, string memory _from, string memory _to, uint _amount) {
+        // Initialize temporary instance for easier manipulation and less gas cost
+        User memory user = userList[msg.sender];
+        Transaction memory transaction = transactionHistory[targetTransactionID];
+
+        // The user can only read transaction history belongs to it
+        require(user.bindAddress == accountToAddress[transaction._from] || user.bindAddress == accountToAddress[transaction._to], "This transaction does not belongs to you!");
+        require(now - transaction._time <= 1 days, "You can only see transaction details within 1 day!");
+
+        return (transaction._transactionID, transaction._type, transaction._time, transaction._from, transaction._to, transaction._amount);
+    }
+
+    /**
+     * Check if the user have registered or not, if yes, return the accountID
+     * @dev Called in the front-end to check if the address hash been registered or not
+     */
+    function checkRegistration() external view returns (string memory) {
+        // Initialize temporary instance for easier manipulation and less gas cost
+        User storage user = userList[msg.sender];
+        if (bytes(user.accountID).length != 0) {
+            return user.accountID;
+        }
+
+        return user.accountID;
+    }
+
+    /**
+     * @return balance The balance of the msg.sender
      */
     function checkBalance() external view registered returns (uint balance) {
         return userList[msg.sender].balance;

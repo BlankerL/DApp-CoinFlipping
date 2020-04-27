@@ -34,6 +34,15 @@ contract Bankers is Users {
     }
 
     /**
+     * Permit the banker to withdraw the balance (commission earnings)
+     */
+    function bankerWithdraw(uint amount) external payable isBanker {
+        require(banker.balance >= amount, "You do not have enough balance.");
+        banker._bindAddress.transfer(amount);
+        banker.balance -= amount;
+    }
+
+    /**
      * Check if the msg.sender is the banker, used in front-end only
      */
     function checkIsBanker() external view returns (bool _isBanker) {
@@ -52,15 +61,6 @@ contract Bankers is Users {
     }
 
     /**
-     * Permit the banker to withdraw the balance (commission earnings)
-     */
-    function bankerWithdraw(uint amount) external payable isBanker {
-        require(banker.balance >= amount, "You do not have enough balance.");
-        banker._bindAddress.transfer(amount);
-        banker.balance -= amount;
-    }
-
-    /**
      * The banker can know the latest transaction ID
      */
     function latestTransactionID() external view isBanker returns (uint _latestTransactionID) {
@@ -73,9 +73,9 @@ contract Bankers is Users {
      * @return _id The transaction ID
      * @return _type The type of the transaction
      * @return _time The timestamp of the transaction
-     * @param _from Where the amount of ETH is transferred from
-     * @param _to Where the amount of ETH is transferred to
-     * @param _amount the The amount of ETH being transferred
+     * @return _from Where the amount of ETH is transferred from
+     * @return _to Where the amount of ETH is transferred to
+     * @return _amount the The amount of ETH being transferred
      */
     function bankerTransactionCheck(uint targetTransactionID) external view isBanker returns (uint _id, string memory _type, uint _time, string memory _from, string memory _to, uint _amount) {
         // Initialize temporary instance for easier manipulation and less gas cost
