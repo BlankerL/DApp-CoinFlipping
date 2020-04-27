@@ -96,7 +96,6 @@ function flipCoin() {
                     if (error) {
                         console.log(error);
                     } else {
-                        console.log(result);
                         if (result) {
                             clearInterval(submitHashCheckTimer);
                             submitClearText(randomNumber);
@@ -126,8 +125,6 @@ function submitHash(clearText) {
         function (error, result) {
             if (error) {
                 console.log(error);
-            } else {
-                console.log(result);
             }
         }
     )
@@ -145,8 +142,6 @@ function submitClearText(clearText) {
         function (error, result) {
             if (error) {
                 console.log(error);
-            } else {
-                console.log(result);
             }
         }
     )

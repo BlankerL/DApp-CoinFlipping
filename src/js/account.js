@@ -61,7 +61,9 @@ function depositEther() {
                 console.log(error);
             } else {
                 alert('You have successfully deposited ' + $("#deposit_amount").val() + " ETH! Have fun!");
+                document.getElementById("deposit_amount").value = "";
                 checkBalance();
+                transactionCheck();
             }
         }
     )
@@ -79,7 +81,9 @@ function withdrawEther() {
                 console.log(error);
             } else {
                 alert('You have successfully withdrawn ' + $("#withdraw_amount").val() + " ETH!");
+                document.getElementById("withdraw_amount").value = "";
                 checkBalance();
+                transactionCheck();
             }
         }
     )
@@ -100,7 +104,10 @@ function transferEther() {
                     console.log(error);
                 } else {
                     alert('You have successfully transfer ' + $("#transfer_amount").val() + " ETH to " + target_account + "!");
+                    document.getElementById("transfer_target").value = "";
+                    document.getElementById("transfer_amount").value = "";
                     checkBalance();
+                    transactionCheck();
                 }
             }
         )
@@ -117,7 +124,10 @@ function transferEther() {
                     console.log(error);
                 } else {
                     alert('You have successfully transfer ' + $("#transfer_amount").val() + " ETH to " + target_account + "!");
+                    document.getElementById("transfer_target").value = "";
+                    document.getElementById("transfer_amount").value = "";
                     checkBalance();
+                    transactionCheck();
                 }
             }
         )
@@ -137,8 +147,8 @@ function transactionCheck() {
                     document.getElementById('transaction_history').className = "text-center";
                     document.getElementById('transaction_history').innerText = "You are a new player! No history for you!"
                 } else {
+                    $("#transaction_history_tbody").empty();
                     result.reverse();
-                    // TODO: Only return result within 1 day.
                     result.some(addTransactionHistory);
                     function addTransactionHistory(transactionID) {
                         coinFlipWeb3.contractInstance.methods.transactionCheck(
