@@ -107,13 +107,13 @@
                 <h5 class="text-center">Coin Flipping Game</h5>
                 <div id="initialize_game" style="display: none">
                     <form id="form_initialize_game">
-                        <div class="input-group">
+                        <div class="input-group mb-2">
                             <input type="text" id="input_betValue" class="form-control" placeholder="Bet Value">
                             <div class="input-group-append">
                                 <span class="input-group-text">ETH</span>
                             </div>
                         </div>
-                        <div class="input-group">
+                        <div class="input-group mb-2">
                             <input type="text" id="input_maxPlayers" class="form-control" placeholder="Max Players Allowed">
                         </div>
                         <button type="button" id="button_initialize_game" class="btn btn-outline-success btn-block" onclick="initializeGame();">
@@ -128,15 +128,11 @@
                             <td id="betValue">Pending</td>
                         </tr>
                         <tr>
-                            <th>
-                                Max Players
-                            </th>
+                            <th>Max Players</th>
                             <td id="maxPlayers"></td>
                         </tr>
                         <tr>
-                            <th>
-                                Current Players
-                            </th>
+                            <th>Current Players</th>
                             <td id="currentPlayers"></td>
                         </tr>
                     </table>
@@ -191,24 +187,12 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>
-                                    Transaction ID
-                                </th>
-                                <th>
-                                    Type
-                                </th>
-                                <th>
-                                    Transaction Time
-                                </th>
-                                <th>
-                                    From
-                                </th>
-                                <th>
-                                    To
-                                </th>
-                                <th>
-                                    Amount
-                                </th>
+                                <th>Transaction ID</th>
+                                <th>Type</th>
+                                <th>Transaction Time</th>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Amount</th>
                             </tr>
                         </thead>
                         <tbody id="transaction_history_tbody"></tbody>
