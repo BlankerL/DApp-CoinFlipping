@@ -202,8 +202,8 @@
         </div>
     </div>
     <script>
-        function firstTimeLogin() {
-            ethereum.enable();
+        async function firstTimeLogin() {
+            await ethereum.enable();
             location.reload();  // Reload until the enable is done.
         }
 
