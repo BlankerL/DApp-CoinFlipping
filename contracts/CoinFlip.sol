@@ -253,24 +253,31 @@ contract CoinFlip is Bankers {
     }
 
     /**
-     * @return game_id of last game
-     * @return bet_value of last game
-     * @return total_player number of last game
-     * @return your_index of the msg.sender
+     * @return game_id Game IDof last game
+     * @return bet_value Bet value of last game
+     * @return total_player  Number of players in last game
+     * @return your_index Index of the msg.sender in last game
+     * @return winner_index Index of the winner in last game
      */
-    function lastGameHistory() external view returns (uint game_id, uint bet_value, uint total_player, uint your_index) {
+    function lastGameHistory() external view returns (uint game_id, uint bet_value, uint total_player, uint your_index, uint winner_index) {
         // Initialize temporary instance for easier manipulation and less gas cost
         Game storage game = gameHistory[userList[msg.sender].lastGameID];
 
         // Find the index of the user
         uint userIndex = 0;
+        uint winnerIndex = 0;
         for (uint i = 0; i < 2; i++) {
             if (msg.sender == game.player[i]) {
-                userIndex = i;
+                userIndex = i + 1;
+            }
+            if (game.winner == game.player[i]) {
+                winnerIndex = i + 1;
+            }
+            if (userIndex != 0 && winnerIndex != 0) {
                 break;
             }
         }
-        return (game.ID, game.betValue, game.player.length, userIndex);
+        return (game.ID, game.betValue, game.player.length, userIndex, winnerIndex);
     }
 
     /**

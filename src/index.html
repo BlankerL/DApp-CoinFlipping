@@ -23,12 +23,12 @@
     <div class="container-fluid">
         <div class="row shadow-lg p-3 mb-5 bg-white rounded">
             <div id="account_information_panel" class="col-md d-flex flex-column" style="border-right: 1px solid lightgrey;">
-                <span>
-                    <span>
-                        <b>Address</b>
-                    </span>
-                    <span id="address">Pending</span>
-                </span>
+                <table class="table">
+                    <tr>
+                        <th>Address</th>
+                        <td id="address">Pending</td>
+                    </tr>
+                </table>
                 <p id="login">
                     Please click <a href="#" onclick="firstTimeLogin();">here</a> to allow us read your selected
                     Ethereum address from MetaMask.
@@ -120,10 +120,12 @@
                     </form>
                 </div>
                 <div id="joinGame" style="display: none">
-                    <span>
-                        <b>Bet Value</b>
-                        <span id="betValue">Pending</span>
-                    </span>
+                    <table class="table">
+                        <tr>
+                            <th>Bet Value</th>
+                            <td id="betValue">Pending</td>
+                        </tr>
+                    </table>
                     <br>
                     <button type="button" id="button_join_game" class="btn btn-outline-success btn-block" onclick="joinGame();">
                         Join Game
@@ -156,6 +158,10 @@
                             <tr>
                                 <th>Your Index</th>
                                 <td id="last_game_your_index"></td>
+                            </tr>
+                            <tr>
+                                <th>Winner Index</th>
+                                <td id="last_game_winner_index"></td>
                             </tr>
                         </table>
                     </div>

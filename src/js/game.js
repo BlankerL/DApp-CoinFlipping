@@ -165,7 +165,8 @@ function lastGameHistory() {
                     document.getElementById('last_game_id').innerText = result["game_id"];
                     document.getElementById('last_game_bet_value').innerText = web3.utils.fromWei(result["bet_value"], 'ether') + ' ETH';
                     document.getElementById('last_game_total_player').innerText = result["total_player"];
-                    document.getElementById('last_game_your_index').innerText = parseInt(result["your_index"]) + 1;
+                    document.getElementById('last_game_your_index').innerText = result["your_index"];
+                    document.getElementById('last_game_winner_index').innerText = result["winner_index"];
                 } else {
                     document.getElementById('game_history').className = "text-center";
                     document.getElementById('game_history').innerText = "You are a new player! No history for you!";
