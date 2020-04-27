@@ -138,10 +138,13 @@ contract CoinFlip is Bankers {
     }
 
     /**
-     * @return bet value for current round
+     * @return bet_value Bet value for current round
+     * @return max_player Max player allowed for current game
+     * @return current_player Number of current enrolled players
      */
-    function currentGameBetValue() external view returns (uint) {
-        return gameHistory[gameID].betValue;
+    function currentGameInformation() external view returns (uint bet_value, uint max_player, uint current_player) {
+        Game storage game = gameHistory[gameID];
+        return (game.betValue, game.maxPlayer, game.player.length);
     }
 
     /**
