@@ -104,6 +104,9 @@
                 document.getElementById("address").innerText = address;
                 setTimeout(
                     function () {
+                        // Check if the visitor is the banker
+                        // If yes, the content will be shown to the banker
+                        // If no, the user will be redirected back to the user's page
                         coinFlipWeb3.contractInstance.methods.checkIsBanker().call(
                             {
                                 from: coinFlipWeb3.web3Provider.selectedAddress
@@ -112,13 +115,14 @@
                                 if (error) {
                                     console.log(error);
                                 } else {
-                                    if (result === true) {  // Only the banker can access this page
+                                    if (result) {  // Only the banker can access this page
                                         $("#account_details").show();
-                                        $("#game_panel").show();
-                                        $("#game_history_panel").show();
                                         $("#transaction_history_panel").show();
                                         bankerCheckBalance();
                                         transactionCheck();
+                                    } else {
+                                        alert("You are not the banker! Redirecting you back to user's page!");
+                                        window.location.href = '/index.html';
                                     }
                                 }
                             }

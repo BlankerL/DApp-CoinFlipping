@@ -36,8 +36,12 @@ contract Bankers is Users {
     /**
      * Check if the msg.sender is the banker, used in front-end only
      */
-    function checkIsBanker() external view isBanker returns (bool _isBanker) {
-        return true;
+    function checkIsBanker() external view returns (bool _isBanker) {
+        if (msg.sender == banker._bindAddress) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

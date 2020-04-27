@@ -207,6 +207,33 @@
             location.reload();  // Reload until the enable is done.
         }
 
+        function userPageInitialization() {
+            coinFlipWeb3.contractInstance.methods.checkRegistration().call(
+                {
+                    from: coinFlipWeb3.web3Provider.selectedAddress
+                },
+                function (error, result) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        if (result.length === 0) {  // Which means the length of account ID is not sufficient
+                            $("#register").show();
+                        } else {  // The length of account ID is sufficient, show account information
+                            $("#account_details").show();
+                            $("#game_panel").show();
+                            $("#game_history_panel").show();
+                            $("#transaction_history_panel").show();
+                            checkRegistration();
+                            checkBalance();
+                            checkGameStatus();
+                            lastGameHistory();
+                            transactionCheck();
+                        }
+                    }
+                }
+            )
+        }
+
         $(window).on("load", function () {
             coinFlipWeb3.init();
             const address = coinFlipWeb3.web3Provider.selectedAddress;
@@ -215,7 +242,10 @@
                 document.getElementById("address").innerText = address;
                 setTimeout(
                     function () {
-                        coinFlipWeb3.contractInstance.methods.checkRegistration().call(
+                        // Check if the visitor is the banker
+                        // If yes, the banker can choose to go to the administration panel, or stay here
+                        // If no, the user can only stay in this page
+                        coinFlipWeb3.contractInstance.methods.checkIsBanker().call(
                             {
                                 from: coinFlipWeb3.web3Provider.selectedAddress
                             },
@@ -223,18 +253,14 @@
                                 if (error) {
                                     console.log(error);
                                 } else {
-                                    if (result.length === 0) {  // Which means the length of account ID is not sufficient
-                                        $("#register").show();
-                                    } else {  // The length of account ID is sufficient, show account information
-                                        $("#account_details").show();
-                                        $("#game_panel").show();
-                                        $("#game_history_panel").show();
-                                        $("#transaction_history_panel").show();
-                                        checkRegistration();
-                                        checkBalance();
-                                        checkGameStatus();
-                                        lastGameHistory();
-                                        transactionCheck();
+                                    if (result) {
+                                        if (window.confirm("You are the banker, would you like to go to banker's page?")) {
+                                            window.location.href = '/banker.html';
+                                        } else {
+                                            userPageInitialization();
+                                        }
+                                    } else {
+                                        userPageInitialization();
                                     }
                                 }
                             }
