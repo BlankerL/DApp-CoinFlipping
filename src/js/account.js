@@ -134,6 +134,7 @@ function transactionCheck() {
                 console.log(error);
             } else {
                 if (result.length === 0) {
+                    document.getElementById('transaction_history').className = "text-center";
                     document.getElementById('transaction_history').innerText = "You are a new player! No history for you!"
                 } else {
                     result.reverse();

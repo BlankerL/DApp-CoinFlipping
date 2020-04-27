@@ -167,7 +167,8 @@ function lastGameHistory() {
                     document.getElementById('last_game_total_player').innerText = result["total_player"];
                     document.getElementById('last_game_your_index').innerText = parseInt(result["your_index"]) + 1;
                 } else {
-                    document.getElementById('game_history').innerText = "You are a new player! No history for you!"
+                    document.getElementById('game_history').className = "text-center";
+                    document.getElementById('game_history').innerText = "You are a new player! No history for you!";
                 }
             }
         }

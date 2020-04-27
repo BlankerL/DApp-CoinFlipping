@@ -20,9 +20,9 @@
 </head>
 
 <body>
-    <div class="container">
-        <div class="row">
-            <div id="account_information_panel" class="col-md shadow p-3 mb-5 bg-white rounded">
+    <div class="container-fluid">
+        <div class="row shadow-lg p-3 mb-5 bg-white rounded">
+            <div id="account_information_panel" class="col-md d-flex flex-column" style="border-right: 1px solid lightgrey;">
                 <span>
                     <span>
                         <b>Address</b>
@@ -50,15 +50,16 @@
                 <div id="account_details" style="display: none">
                     <div>
                         <h5 class="text-center">Account Details</h5>
-                            <span>
-                            <b>Username</b>
-                            <span id="username"></span>
-                        </span>
-                            <br>
-                            <span>
-                            <b>Balance</b>
-                            <span id="balance"></span>
-                        </span>
+                        <table class="table">
+                            <tr>
+                                <th>Username</th>
+                                <td id="username"></td>
+                            </tr>
+                            <tr>
+                                <th>Balance</th>
+                                <td id="balance"></td>
+                            </tr>
+                        </table>
                     </div>
                     <form name="deposit" class="shadow-sm p-2 mb-2 bg-white rounded">
                         <div class="input-group">
@@ -102,7 +103,7 @@
                     </form>
                 </div>
             </div>
-            <div id="game_panel" class="col-md shadow p-3 mb-5 bg-white rounded" style="display: none;">
+            <div id="game_panel" class="col-md d-flex flex-column" style="display: none;">
                 <h5 class="text-center">Game</h5>
                 <div id="initialize_game" style="display: none">
                     <form id="form_initialize_game">
@@ -136,31 +137,33 @@
                 <div id="waitingList" style="display: none">
                     Others are playing game right now, please wait.
                 </div>
-                <div id="game_history_panel" class="col-md col-md shadow p-3 mb-5 bg-white rounded" style="display: none; width: 94%; bottom: 0; position: absolute">
+                <div id="game_history_panel" class="mt-auto shadow-sm p-2 mb-2 bg-white rounded" style="display: none;">
                     <h5 class="text-center">Last Game History</h5>
                     <div id="game_history">
-                        <p>
-                            <b>Game ID</b>
-                            <span id="last_game_id"></span>
-                        </p>
-                        <p>
-                            <b>Bet Value</b>
-                            <span id="last_game_bet_value"></span>
-                        </p>
-                        <p>
-                            <b>Total Player</b>
-                            <span id="last_game_total_player"></span>
-                        </p>
-                        <p>
-                            <b>Your Index</b>
-                            <span id="last_game_your_index"></span>
-                        </p>
+                        <table class="table">
+                            <tr>
+                                <th>Game ID</th>
+                                <td id="last_game_id"></td>
+                            </tr>
+                            <tr>
+                                <th>Bet Value</th>
+                                <td id="last_game_bet_value"></td>
+                            </tr>
+                            <tr>
+                                <th>Total Player</th>
+                                <td id="last_game_total_player"></td>
+                            </tr>
+                            <tr>
+                                <th>Your Index</th>
+                                <td id="last_game_your_index"></td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div id="transaction_history_panel" class="col-md col-md shadow p-3 mb-5 bg-white rounded" style="display: none">
+            <div id="transaction_history_panel" class="col-md shadow-lg p-3 mb-5 bg-white rounded" style="display: none">
                 <h5 class="text-center">Transaction History</h5>
                 <div id="transaction_history">
                     <table class="table table-striped">
