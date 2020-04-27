@@ -64,11 +64,19 @@ contract Users {
     /**
      * Reveal the transactions within 1 day to users
      * @param targetTransactionID The transaction to reveal the details
+     * @return _id The transaction ID
+     * @return _type The type of the transaction
+     * @return _time The timestamp of the transaction
+     * @param _from Where the amount of ETH is transferred from
+     * @param _to Where the amount of ETH is transferred to
+     * @param _amount the The amount of ETH being transferred
      * @notice User can only see the transaction belongs to it
      */
     function userTransactionCheck(uint targetTransactionID) external view returns (uint _id, string memory _type, uint _time, string memory _from, string memory _to, uint _amount) {
+        // Initialize temporary instance for easier manipulation and less gas cost
         User memory user = userList[msg.sender];
         Transaction memory transaction = transactionHistory[targetTransactionID];
+
         // The user can only read transaction history belongs to it
         require(user.bindAddress == accountToAddress[transaction._from] || user.bindAddress == accountToAddress[transaction._to], "This transaction does not belongs to you!");
         require(now - transaction._time <= 1 days, "You can only see transaction details within 1 day!");

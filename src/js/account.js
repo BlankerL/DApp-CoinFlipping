@@ -151,7 +151,7 @@ function transactionCheck() {
                     result.reverse();
                     result.some(addTransactionHistory);
                     function addTransactionHistory(transactionID) {
-                        coinFlipWeb3.contractInstance.methods.transactionCheck(
+                        coinFlipWeb3.contractInstance.methods.userTransactionCheck(
                             parseInt(transactionID)
                         ).call(
                             {
