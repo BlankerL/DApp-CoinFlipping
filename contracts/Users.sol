@@ -62,11 +62,15 @@ contract Users {
     }
 
     /**
-     * Reveal the transactions within 1 day
+     * Reveal the transactions within 1 day to users
      * @param targetTransactionID The transaction to reveal the details
+     * @notice User can only see the transaction belongs to it
      */
-    function transactionCheck(uint targetTransactionID) external view returns (uint _id, string memory _type, uint _time, string memory _from, string memory _to, uint _amount) {
+    function userTransactionCheck(uint targetTransactionID) external view returns (uint _id, string memory _type, uint _time, string memory _from, string memory _to, uint _amount) {
+        User memory user = userList[msg.sender];
         Transaction memory transaction = transactionHistory[targetTransactionID];
+        // The user can only read transaction history belongs to it
+        require(user.bindAddress == accountToAddress[transaction._from] || user.bindAddress == accountToAddress[transaction._to], "This transaction does not belongs to you!");
         require(now - transaction._time <= 1 days, "You can only see transaction details within 1 day!");
 
         return (transaction._transactionID, transaction._type, transaction._time, transaction._from, transaction._to, transaction._amount);
