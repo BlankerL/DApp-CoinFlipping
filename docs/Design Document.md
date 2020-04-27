@@ -145,7 +145,8 @@ For each game initiated, a `Game` struct will be initialized in the contract and
 struct Game {
     uint ID;
     uint status;
-    address[2] player;
+    uint maxPlayer;
+    address[] player;
     uint betValue;
     address winner;
     mapping (address => uint) submittedClearText;
@@ -156,7 +157,7 @@ To take this game apart, we can easily find out there are several rounds for the
 
 ##### Round 1
 
-A user initialize a game on the platform, set the bet value. Other users will see the game on the platform, if other users think the bet value is proper, they can click `Join Game` button to join the game. 
+A user initialize a game on the platform, set the bet value and the maximum players supported in this game. Other users will see the game on the platform, if other users think the bet value is proper, they can click `Join Game` button to join the game. 
 
 Once the user participates in the game, the bet value will be deducted and transferred to the banker's game deposit to make sure the player have enough balance and will not withdraw the money before the game ends. 
 
@@ -269,7 +270,7 @@ As we are deploying this contract on Ganache, which will do auto-mining for all 
   - Submit random number in clear text **(at least 1 block)**
     - As the participants needs to check the banker's information from time to time, they might not be able to submit the clear text once the banker inform them to submit. Therefore, it will cost at least 1 block time to submit. 
   - Pick out the winner and house cleaning (1 block)
-- My 2-player minimum number of blocks for one round: 5 blocks/50 seconds (2 players)
+- My 2-player minimum number of blocks for one round: 5 blocks/50 seconds
   - Initialize the game (1 block)
   - Join the game (1 block)
   - Generate hash values and submit (1 block)

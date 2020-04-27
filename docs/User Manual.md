@@ -9,6 +9,7 @@ It is a coin flipping game. It has the following characteristics:
 - **Highly anoymous and confidential.** Users cannot see the counterparties' username (accountID) in the game and game history. In game history, only the user's index and winner's index will be provided. Unless the counterparties go to the [Ethereum Blockchain Explorer](https://etherscan.io/) to track the transactions one by one, they will never know your actual accountID. 
 - **High speed.** The banker (dealer) is implemented within the contract, no real-person dealer is needed. Therefore, the speed of the game will be much faster (at least 16.7% faster if the users always act in time). This part is discussed in [Design Document](Design Document.md). 
 - **Light weight.** There is no server/backend actually needed, all the user/game/transaction information are stored in the blockchain. Even with GitHub Pages, a full functional site can be hosted without any effort. 
+- **Multiple players.** More than 2 players in each round of game is supported. The people who initialize the game can decide how many players are allowed in this round. 
 
 ### First Login
 
@@ -82,13 +83,17 @@ If there is an on-going game, the bet value of that game will be shown. If you a
 
 Please make sure you have enough balance to join a game. 
 
-<img src="User Manual.assets/Join Game.png" alt="Join Game " style="zoom:50%;" />
+<img src="User Manual.assets/Join Game.png" alt="Join Game" style="zoom:40%;" />
 
 The same as initializing a game, once you successfully join a game, the bet value will be temporarily transferred from your balance to the banker's deposit to freeze those tokens. 
 
+If the user has successfully enrolled in this game, there will be an alert showing this information. 
+
+<img src="User Manual.assets/Successfully Enrolled.png" alt="Successfully Enrolled " style="zoom:40%;" />
+
 ##### Flip Coin
 
-Once you have successfully join a game, you can flip the coin by clicking `Flip the Coin`. 
+Once the players reached the max players, the game will start automatically. You can flip the coin by clicking `Flip the Coin`. 
 
 <img src="User Manual.assets/Flip Coin.png" alt="Flip Coin" style="zoom:50%;" />
 
@@ -115,9 +120,7 @@ The winner will receive the reward once the game ends. 95% of the total bet valu
 
 The game history of the previous round will be available on the page. 
 
-<img src="User Manual.assets/Game History of Loser.png" alt="Game History of Loser" style="zoom:40%;" />
-
-<img src="User Manual.assets/Game History of Winner.png" alt="Game History of Winner " style="zoom:40%;" />
+<img src="User Manual.assets/Game History.png" alt="Game History" style="zoom:40%;" />
 
 To keep the privacy of the participants, only the indexes will be shown in this frame. You can find out how many participants are in this round, your index and the winner's index. 
 
