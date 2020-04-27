@@ -90,8 +90,8 @@ function flipCoin() {
     const randomNumber = Math.floor(Math.random() * 1e+16);
     submitHash(randomNumber);
     let submitHashCheckTimer = setInterval(
-        function bothSubmitHashCheck() {
-            coinFlipWeb3.contractInstance.methods.bothSubmitHashCheck().call(
+        function checkAllSubmitHash() {
+            coinFlipWeb3.contractInstance.methods.checkAllSubmitHash().call(
                 {
                     from: coinFlipWeb3.web3Provider.selectedAddress
                 },
