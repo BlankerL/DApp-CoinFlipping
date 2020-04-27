@@ -137,6 +137,10 @@ The banker will transfer 95% of the game deposit to the winner, and transfer 5% 
 
 As the banker keeps earning commissions in the contract if users play games on the platform, it will have some deposit in the `balance`. The person who deploy this contract will be able to withdraw this commission earnings by calling `withdrawBanker()` function, and the required amount of ETH will be transferred to the person's Ethereum account from the contract. 
 
+##### Monitor All Transactions
+
+In my design, the banker is an Automator in the contract, and the owner of the contract should be able to control the banker. Therefore, for the ease of monitoring, the banker can view all the transaction records in the administration panel. 
+
 #### Coin Flipping Game
 
 For each game initiated, a `Game` struct will be initialized in the contract and stored permanently. 

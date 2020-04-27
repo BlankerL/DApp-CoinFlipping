@@ -70,11 +70,37 @@ Open the terminal, get into directory, run the following commands to deploy.
 truffle migrate --reset
 ```
 
+You will get a contract address of the `CoinFlip`, the information will be similar to the following one. Therefore, the contract address is `0xc5C7187AFDa52957bE5052Cf5d9fdc11E0120111`.
+
+```
+> transaction hash:    0xbfab5e31d8c82739ad02541b5f64204c3ac5a2c41cb025361675427ade09215e
+> Blocks: 0            Seconds: 0
+> contract address:    0xc5C7187AFDa52957bE5052Cf5d9fdc11E0120111
+> block number:        854
+> block timestamp:     1587999346
+> account:             0x7a14Fbf94e944769c125e53e4A8993eC65322764
+> balance:             61.768400299702833669
+> gas used:            5680976
+> gas price:           20 gwei
+> value sent:          0 ETH
+> total cost:          0.11361952 ETH
+```
+
+Replace the contract address in the `src/js/coinFlipWeb3.js`.
+
+```javascript
+coinFlipWeb3 = {
+    contractAddress: "0xc5C7187AFDa52957bE5052Cf5d9fdc11E0120111",  // Replace here
+    web3Provider: null,
+    contractInstance: null
+}
+```
+
 Then, you can run `lite-server` in the `src` folder to go to the index page. 
 
 ```bash
 lite-server
 ```
 
-If your selected address in MetaMask is the address of contract owner, the webpage will ask you whether you would like to go to the administration panel, which is `/banker.html`. Otherwise, you can only visit the user panel, which is`/index.html`. 
+If your selected address in MetaMask is the address of contract owner, the webpage will ask you whether you would like to go to the administration panel, which is `/banker.html`. Otherwise, you can only visit the user panel, which is `/index.html`. 
 
