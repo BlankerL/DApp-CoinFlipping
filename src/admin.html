@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ethereum Coin Flipping Game</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
+        integrity="sha256-L/W5Wfqfa0sdBNIKN9cG6QA5F2qx4qICmU2VgLruv9Y=" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.min.js"
+        integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"
+        integrity="sha256-WqU1JavFxSAMcLP2WIOI+GB2zWmShMI82mTpLDcqFUg=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.2.6/dist/web3.min.js"
+        integrity="sha256-41uzGn9fA7UcxMsaZVctBr9HzW4VITzBDzsp5SzVDbQ=" crossorigin="anonymous"></script>
+
+    <script src="js/coinFlipWeb3.js"></script>
+    <script src="js/admin.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row shadow-lg p-3 mb-5 bg-white rounded">
+            <div id="account_information_panel" class="col-md d-flex flex-column">
+                <table class="table">
+                    <tr>
+                        <th>Address</th>
+                        <td id="address">Pending</td>
+                    </tr>
+                </table>
+                <p id="login">
+                    Please click <a href="#" onclick="firstTimeLogin();">here</a> to allow us read your selected
+                    Ethereum address from MetaMask.
+                </p>
+                <div id="account_details" style="display: none">
+                    <div>
+                        <h5 class="text-center">Account Details</h5>
+                        <table class="table">
+                            <tr>
+                                <th>Balance</th>
+                                <td id="balance"></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <form name="withdraw" class="shadow-sm p-2 mb-2 bg-white rounded">
+                        <div class="input-group">
+                            <input type="text" id="withdraw_amount" class="form-control" placeholder="Withdraw Amount">
+                            <div class="input-group-append">
+                                <span class="input-group-text">ETH</span>
+                            </div>
+                        </div>
+                        <br>
+                        <button type="button" id="button_withdraw" class="btn btn-outline-success btn-block" onclick="withdrawEther();">
+                            Withdraw
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div id="transaction_history_panel" class="col-md shadow-lg p-3 mb-5 bg-white rounded" style="display: none">
+                <h5 class="text-center">Transaction History</h5>
+                <div id="transaction_history">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Transaction ID
+                                </th>
+                                <th>
+                                    Type
+                                </th>
+                                <th>
+                                    Transaction Time
+                                </th>
+                                <th>
+                                    From
+                                </th>
+                                <th>
+                                    To
+                                </th>
+                                <th>
+                                    Amount
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="transaction_history_tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function firstTimeLogin() {
+            ethereum.enable();
+            location.reload();  // Reload until the enable is done.
+        }
+
+        $(window).on("load", function () {
+            coinFlipWeb3.init();
+            const address = coinFlipWeb3.web3Provider.selectedAddress;
+            if (address != null) {  // If the address has been loaded, check if the account is registered.
+                $("#login").hide();
+                document.getElementById("address").innerText = address;
+                setTimeout(
+                    function () {
+                        coinFlipWeb3.contractInstance.methods.checkIsBanker().call(
+                            {
+                                from: coinFlipWeb3.web3Provider.selectedAddress
+                            },
+                            function (error, result) {
+                                if (error) {
+                                    console.log(error);
+                                } else {
+                                    if (result === true) {  // Only the banker can access this page
+                                        $("#account_details").show();
+                                        $("#game_panel").show();
+                                        $("#game_history_panel").show();
+                                        $("#transaction_history_panel").show();
+                                        bankerCheckBalance();
+                                        transactionCheck();
+                                    }
+                                }
+                            }
+                        )
+                    },
+                    1000
+                )
+            }
+        });
+    </script>
+</body>
+
+</html>

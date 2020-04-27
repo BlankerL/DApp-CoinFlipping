@@ -34,6 +34,20 @@ contract Bankers is Users {
     }
 
     /**
+     * Check if the msg.sender is the banker, used in front-end only
+     */
+    function checkIsBanker() external view isBanker returns (bool _isBanker) {
+        return true;
+    }
+
+    /**
+     * Check the banker's balance
+     */
+    function bankerCheckBalance() external view isBanker returns (uint balance) {
+        return banker.balance;
+    }
+
+    /**
      * Permit the banker to withdraw the balance (commission earnings)
      */
     function bankerWithdraw(uint amount) external payable isBanker {
